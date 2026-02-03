@@ -9,7 +9,7 @@ const glassTitle =
 	'inline-flex w-fit items-center rounded-full bg-white/20 backdrop-blur-md ring-1 ring-white/30 px-4 py-2 text-grey-dark';
 
 const chipBase =
-	'rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 ring-[1px] ' +
+	'h-10 inline-flex items-center justify-center rounded-full px-4 text-sm font-medium transition-all duration-200 ring-[1px] ' +
 	'bg-white/10 backdrop-blur-sm ring-white/30 hover:bg-white/20 hover:ring-white/40 ' +
 	'focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-transparent';
 
@@ -105,24 +105,42 @@ export function CategoriesWithFilter({ categories, areasWithThumb }: Props) {
 						<button
 							type='button'
 							onClick={() => setSortOrder((o) => (o === 'az' ? 'za' : 'az'))}
-							className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full p-0 transition-all duration-200 ${chipBase} ${sortOrder === 'za' ? chipActive : 'text-grey-dark'}`}
+							className={`h-10 w-10 shrink-0 rounded-full p-0 transition-all duration-200 ${chipBase} ${sortOrder === 'za' ? chipActive : 'text-grey-dark'}`}
 							aria-label={sortOrder === 'az' ? 'Orden A-Z (clic para Z-A)' : 'Orden Z-A (clic para A-Z)'}
 							title={sortOrder === 'az' ? 'A-Z (clic: Z-A)' : 'Z-A (clic: A-Z)'}
 							aria-pressed={sortOrder === 'za'}
 						>
 							{sortOrder === 'az' ? (
-								<svg key="az" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round' className='w-7 h-7' aria-hidden>
-									<path d='M5 8h14' />
-									<path d='M7 12h10' />
-									<path d='M12 16v-6' />
-									<path d='m9 13 3-3 3 3' />
+								<svg
+									key='az'
+									xmlns='http://www.w3.org/2000/svg'
+									viewBox='0 0 24 24'
+									fill='none'
+									stroke='currentColor'
+									strokeWidth='2'
+									strokeLinecap='round'
+									strokeLinejoin='round'
+									className='size-5 shrink-0'
+									aria-hidden
+								>
+									<path d='M12 5v14' />
+									<path d='m19 12-7 7-7-7' />
 								</svg>
 							) : (
-								<svg key="za" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round' className='w-7 h-7' aria-hidden>
-									<path d='M5 8h14' />
-									<path d='M7 12h10' />
-									<path d='M12 8v6' />
-									<path d='m9 11 3 3 3-3' />
+								<svg
+									key='za'
+									xmlns='http://www.w3.org/2000/svg'
+									viewBox='0 0 24 24'
+									fill='none'
+									stroke='currentColor'
+									strokeWidth='2'
+									strokeLinecap='round'
+									strokeLinejoin='round'
+									className='size-5 shrink-0'
+									aria-hidden
+								>
+									<path d='M12 19V5' />
+									<path d='m5 12 7-7 7 7' />
 								</svg>
 							)}
 						</button>
@@ -145,11 +163,7 @@ export function CategoriesWithFilter({ categories, areasWithThumb }: Props) {
 					showCategories &&
 					categoriesSorted.map((category) => (
 						<Link key={category.idCategory} href={`/category/${encodeURIComponent(category.strCategory)}`}>
-							<Card
-								title={category.strCategory}
-								image={category.strCategoryThumb}
-								imageGradient
-							/>
+							<Card title={category.strCategory} image={category.strCategoryThumb} imageGradient />
 						</Link>
 					))}
 				{!isFullList &&
@@ -159,7 +173,7 @@ export function CategoriesWithFilter({ categories, areasWithThumb }: Props) {
 							<Card
 								title={area.strArea}
 								image={area.strMealThumb || AREA_PLACEHOLDER_IMAGE}
-								fit="cover"
+								fit='cover'
 								imageGradient
 							/>
 						</Link>

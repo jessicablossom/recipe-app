@@ -9,7 +9,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 			<body className='antialiased flex min-h-screen flex-col'>
 				<Providers>
 					<NavBar />
-					<main className='flex-1 w-full'>{children}</main>
+					<main className='flex-1 w-full pt-16'>{children}</main>
 					<Footer />
 				</Providers>
 			</body>

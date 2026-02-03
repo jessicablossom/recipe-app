@@ -1,5 +1,7 @@
 'use client';
 
+import { FavoritesProvider } from '@/contexts/FavoritesContext';
+import { SearchProvider } from '@/contexts/SearchContext';
 import { StoreProvider } from '@/store/StoreProvider';
 
 type Props = {
@@ -7,5 +9,11 @@ type Props = {
 };
 
 export function Providers({ children }: Props) {
-	return <StoreProvider>{children}</StoreProvider>;
+	return (
+		<StoreProvider>
+			<FavoritesProvider>
+				<SearchProvider>{children}</SearchProvider>
+			</FavoritesProvider>
+		</StoreProvider>
+	);
 }

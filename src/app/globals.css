@@ -3,27 +3,54 @@
 @tailwind utilities;
 
 :root {
-	--color-primary: 90 140 110;
-	--color-secondary: 206 216 158;
+	--color-primary: 52 148 115;
+	--color-secondary: 255 175 45;
 
-	--color-accent: 234 150 64;
-	--color-accent-light: 245 229 214;
+	--color-accent: 255 149 100;
+	--color-accent-light: 255 243 235;
 
-	--color-error: 233 79 55;
-	--color-error-light: 254 226 226;
+	--color-error: 255 59 48;
+	--color-error-light: 255 235 233;
 
-	--color-warning: 234 179 8;
-	--color-warning-light: 254 249 195;
+	--color-warning: 255 204 0;
+	--color-warning-light: 255 250 230;
 
-	--color-success: 34 139 84;
-	--color-success-light: 220 252 231;
+	--color-success: 48 209 88;
+	--color-success-light: 235 252 238;
 
-	--color-grey-light: 248 247 245;
-	--color-grey-medium: 200 200 195;
-	--color-grey-dark: 90 90 85;
+	--color-grey-light: 242 242 247;
+	--color-grey-medium: 174 174 178;
+	--color-grey-dark: 58 58 60;
 	--color-black: 0 0 0;
 }
 
 body {
 	font-family: Arial, Helvetica, sans-serif;
+}
+
+@keyframes skeleton-pulse {
+	0%,
+	100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.5;
+	}
+}
+
+.animate-skeleton-pulse {
+	animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes card-fade-in {
+	from {
+		opacity: 0.82;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+.animate-card-in {
+	animation: card-fade-in 0.32s ease-out forwards;
 }

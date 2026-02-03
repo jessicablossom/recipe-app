@@ -23,15 +23,15 @@ export default function NotFound() {
 			<main className='relative flex flex-col items-center justify-center gap-6 px-4 py-8'>
 				<div className={`w-full max-w-md p-8 text-center ${glassPanel}`}>
 					<h1 className='text-2xl font-bold tracking-tight text-grey-dark md:text-3xl'>
-						Página no encontrada
+						Page not found
 					</h1>
-					<p className='mt-3 text-grey-dark/90'>El enlace que seguiste no existe o ya no está disponible.</p>
+					<p className='mt-3 text-grey-dark/90'>The link you followed does not exist or is no longer available.</p>
 					<div className='mt-6 flex flex-wrap items-center justify-center gap-3'>
 						<Link href='/' className={glassButton}>
-							Inicio
+							Home
 						</Link>
 						<Link href='/categories' className={glassButton}>
-							Categorías
+							Categories
 						</Link>
 					</div>
 				</div>

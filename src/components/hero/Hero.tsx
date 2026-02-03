@@ -6,7 +6,7 @@ import { useRecommendation } from '@/contexts/RecommendationContext';
 
 type Step = 1 | 2;
 
-const CAROUSEL_MAX_WIDTH = '32rem'; /* ~6 chips visibles */
+const CAROUSEL_MAX_WIDTH = '32rem';
 
 export function Hero() {
 	const [step, setStep] = useState<Step>(1);
@@ -73,15 +73,15 @@ export function Hero() {
 					<div className='grid gap-4 md:gap-6 lg:grid-cols-[1fr_1.15fr] items-center min-w-0'>
 						<div className='space-y-4 min-w-0'>
 							<div className='inline-flex items-center rounded-full bg-white/15 ring-1 ring-white/20 px-3 py-1 text-sm text-white/85'>
-								Recomendador de recetas
+								Recipe recommender
 							</div>
 
 							<h1 className='text-4xl md:text-6xl font-semibold text-white tracking-tight leading-[1.02]'>
-								Elegí 2 preferencias y te damos 1 receta
+								Pick 2 preferences and get 1 recipe
 							</h1>
 
 							<p className='text-white/75 text-base md:text-lg max-w-xl leading-relaxed'>
-								Probá una idea nueva sin perder tiempo. Guardamos tu feedback y armamos historial.
+								Try a new idea without wasting time. We save your feedback and build history.
 							</p>
 						</div>
 
@@ -107,7 +107,7 @@ export function Hero() {
 												onClick={onBack}
 												className='text-white/90 hover:text-white underline underline-offset-2 text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-primary rounded'
 											>
-												Limpiar
+												Clear
 											</button>
 										)}
 										{step === 1 ? (
@@ -117,11 +117,11 @@ export function Hero() {
 												disabled={!area}
 												className={buttonPrimary}
 											>
-												Siguiente
+												Next
 											</button>
 										) : (
 											<button type='submit' disabled={!constraint} className={buttonPrimary}>
-												Recomendar
+												Recommend
 											</button>
 										)}
 									</div>
@@ -129,8 +129,8 @@ export function Hero() {
 
 								<div className='space-y-2 min-w-0'>
 									<div className='flex items-center justify-between'>
-										<label className='text-sm font-medium text-white'>Cocina / Área</label>
-										{area ? <span className='text-xs text-primary/90'>Seleccionado</span> : null}
+										<label className='text-sm font-medium text-white'>Cuisine / Area</label>
+										{area ? <span className='text-xs text-primary/90'>Selected</span> : null}
 									</div>
 
 									<div
@@ -143,7 +143,7 @@ export function Hero() {
 									>
 										<div className='flex gap-2 flex-nowrap w-max'>
 											{areasLoading ? (
-												<span className='text-sm text-white/70'>Cargando áreas…</span>
+												<span className='text-sm text-white/70'>Loading areas…</span>
 											) : (
 												areas.map((a) => {
 													const isActive = area === a;
@@ -176,10 +176,10 @@ export function Hero() {
 									<div className='space-y-2 min-w-0'>
 										<div className='flex items-center justify-between'>
 											<label htmlFor='constraint' className='text-sm font-medium text-white'>
-												Categoría
+												Category
 											</label>
 											{constraint ? (
-												<span className='text-xs text-secondary/90'>Seleccionado</span>
+												<span className='text-xs text-secondary/90'>Selected</span>
 											) : null}
 										</div>
 										<div
@@ -192,7 +192,7 @@ export function Hero() {
 										>
 											<div className='flex gap-2 flex-nowrap w-max'>
 												{categoriesLoading ? (
-													<span className='text-sm text-white/70'>Cargando categorías…</span>
+													<span className='text-sm text-white/70'>Loading categories…</span>
 												) : (
 													categories.map((c) => {
 														const isActive = constraint === c;
@@ -221,8 +221,8 @@ export function Hero() {
 
 								<p className='text-xs text-white/75'>
 									{step === 1
-										? 'Elegí un área para continuar.'
-										: 'Elegí la categoría y pedí una recomendación.'}
+										? 'Pick an area to continue.'
+										: 'Pick the category and request a recommendation.'}
 								</p>
 							</form>
 						</div>

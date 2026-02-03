@@ -9,7 +9,7 @@ import { useSearch } from '@/contexts/SearchContext';
 
 const NAV_LINKS = [
 	{ href: '/', label: 'Home' },
-	{ href: '/categories', label: 'Categorías' },
+	{ href: '/categories', label: 'Categories' },
 ] as const;
 
 function HeartIcon({ filled }: { filled: boolean }) {
@@ -63,10 +63,10 @@ export function NavBar() {
 		>
 			<div className='mx-auto flex h-16 max-w-5xl items-center justify-between px-4 md:px-16'>
 				<div className='flex items-center gap-6'>
-					<div className='flex items-end gap-2'>
+					<Link href='/' className='flex items-end gap-2'>
 						<Image src='/assets/icon-filled.png' alt='Recipe App icon' width={35} height={35} />
-						<span className='text-white text-xl font-medium'>Recetas app</span>
-					</div>
+						<span className='hidden sm:inline text-white text-xl font-medium'>Recipe app</span>
+					</Link>
 				</div>
 				<ul className='flex items-center gap-6'>
 					{NAV_LINKS.map(({ href, label }) => (
@@ -87,17 +87,17 @@ export function NavBar() {
 										: 'inline-flex items-center justify-center py-2 transition text-white border-b-[3px] border-white font-medium'
 									: 'inline-flex items-center justify-center py-2 transition text-white hover:text-white/80'
 							}
-							aria-label="Búsqueda"
+							aria-label="Search"
 							aria-expanded={searchOpen}
 						>
-							Búsqueda
+							Search
 						</button>
 					</li>
 					<li>
 						<Link
 							href="/favorites"
 							className={navLinkClass(pathname, '/favorites', isHome, searchOpen)}
-							aria-label="Favoritos"
+							aria-label="Favorites"
 						>
 							<HeartIcon filled={pathname === '/favorites'} />
 						</Link>

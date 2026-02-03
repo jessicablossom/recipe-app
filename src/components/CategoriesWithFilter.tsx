@@ -65,16 +65,16 @@ export function CategoriesWithFilter({ categories, areasWithThumb }: Props) {
 				type: 'area' as const,
 			})),
 		];
-		return [...items].sort((a, b) => sortCmp * a.title.localeCompare(b.title, 'es'));
-	}, [isFullList, categories, areasWithThumb, sortOrder, sortCmp]);
+		return [...items].sort((a, b) => sortCmp * a.title.localeCompare(b.title, 'en'));
+	}, [isFullList, categories, areasWithThumb, sortCmp]);
 
 	const categoriesSorted = useMemo(
-		() => [...categories].sort((a, b) => sortCmp * a.strCategory.localeCompare(b.strCategory, 'es')),
+		() => [...categories].sort((a, b) => sortCmp * a.strCategory.localeCompare(b.strCategory, 'en')),
 		[categories, sortCmp],
 	);
 
 	const areasSorted = useMemo(
-		() => [...areasWithThumb].sort((a, b) => sortCmp * a.strArea.localeCompare(b.strArea, 'es')),
+		() => [...areasWithThumb].sort((a, b) => sortCmp * a.strArea.localeCompare(b.strArea, 'en')),
 		[areasWithThumb, sortCmp],
 	);
 
@@ -82,32 +82,32 @@ export function CategoriesWithFilter({ categories, areasWithThumb }: Props) {
 		<div className='flex flex-col gap-6 w-full h-full'>
 			<div className='flex flex-col gap-4'>
 				<div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
-					<h1 className={`text-3xl font-bold ${glassTitle}`}>Listado</h1>
+					<h1 className={`text-3xl font-bold ${glassTitle}`}>Listing</h1>
 					<div className='flex flex-wrap items-center gap-2'>
 						<button
 							type='button'
 							onClick={() => setFilter((f) => toggleFilter(f, 'category'))}
 							className={`${chipBase} ${filter === 'category' ? chipActive : 'text-grey-dark'}`}
 							aria-pressed={filter === 'category'}
-							aria-label={filter === 'category' ? 'Quitar filtro categoría' : 'Filtrar por categoría'}
+							aria-label={filter === 'category' ? 'Clear category filter' : 'Filter by category'}
 						>
-							Por categoría
+							By category
 						</button>
 						<button
 							type='button'
 							onClick={() => setFilter((f) => toggleFilter(f, 'area'))}
 							className={`${chipBase} ${filter === 'area' ? chipActive : 'text-grey-dark'}`}
 							aria-pressed={filter === 'area'}
-							aria-label={filter === 'area' ? 'Quitar filtro país' : 'Filtrar por país'}
+							aria-label={filter === 'area' ? 'Clear country filter' : 'Filter by country'}
 						>
-							Por país
+							By country
 						</button>
 						<button
 							type='button'
 							onClick={() => setSortOrder((o) => (o === 'az' ? 'za' : 'az'))}
 							className={`h-10 w-10 shrink-0 rounded-full p-0 transition-all duration-200 ${chipBase} ${sortOrder === 'za' ? chipActive : 'text-grey-dark'}`}
-							aria-label={sortOrder === 'az' ? 'Orden A-Z (clic para Z-A)' : 'Orden Z-A (clic para A-Z)'}
-							title={sortOrder === 'az' ? 'A-Z (clic: Z-A)' : 'Z-A (clic: A-Z)'}
+							aria-label={sortOrder === 'az' ? 'Sort A-Z (click for Z-A)' : 'Sort Z-A (click for A-Z)'}
+							title={sortOrder === 'az' ? 'A-Z (click: Z-A)' : 'Z-A (click: A-Z)'}
 							aria-pressed={sortOrder === 'za'}
 						>
 							{sortOrder === 'az' ? (

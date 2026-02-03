@@ -5,9 +5,9 @@ import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { FavoriteButton } from '@/components/ui/FavoriteButton';
 import { LikeIcon, DislikeIcon } from '@/components/ui/LikeDislikeIcons';
-import { RecipeImage } from '@/components/ui/RecipeImage';
 import { getMealImageLarge } from '@/utils/mealImage';
 import { useRecommendationFeedback } from '@/contexts/RecommendationFeedbackContext';
+import { RecipeImage } from '../ui/RecipeImage';
 
 type MealDetail = {
 	idMeal: string;
@@ -86,11 +86,11 @@ export function RecommendationDrawer({ open, onClose, params = null }: Props) {
 		setError(null);
 		try {
 			const res = await fetch('/api/meals/random');
-			if (!res.ok) throw new Error('No se pudo obtener la receta');
+			if (!res.ok) throw new Error('Could not fetch recipe');
 			const data = (await res.json()) as MealDetail;
 			setMeal(data);
 		} catch (e) {
-			setError(e instanceof Error ? e.message : 'Error al cargar');
+			setError(e instanceof Error ? e.message : 'Error loading');
 			setMeal(null);
 		} finally {
 			setLoading(false);
@@ -107,13 +107,13 @@ export function RecommendationDrawer({ open, onClose, params = null }: Props) {
 			if (!res.ok) {
 				const err = await res.json().catch(() => ({}));
 				throw new Error(
-					(res.status === 404 && err?.error) || 'No se encontró receta para esa combinación.',
+					(res.status === 404 && err?.error) || 'No recipe found for that combination.',
 				);
 			}
 			const data = (await res.json()) as MealDetail;
 			setMeal(data);
 		} catch (e) {
-			setError(e instanceof Error ? e.message : 'Error al cargar');
+			setError(e instanceof Error ? e.message : 'Error loading');
 			setMeal(null);
 		} finally {
 			setLoading(false);
@@ -153,18 +153,18 @@ export function RecommendationDrawer({ open, onClose, params = null }: Props) {
 				type="button"
 				className={overlayClass}
 				onClick={onClose}
-				aria-label="Cerrar"
+				aria-label="Close"
 				tabIndex={-1}
 			/>
 			<div className="fixed inset-0 z-50 pointer-events-none" aria-hidden>
 				<div className={`${panelClass} pointer-events-auto`}>
 						<div className="sticky top-0 z-10 flex items-center justify-between p-4 bg-white/70 backdrop-blur-xl border-b border-white/30">
-							<h2 className="text-lg font-semibold text-grey-dark">Recomendación instantánea</h2>
+							<h2 className="text-lg font-semibold text-grey-dark">Instant recommendation</h2>
 							<button
 								type="button"
 								onClick={onClose}
 								className={ghostCloseButton}
-								aria-label="Cerrar"
+								aria-label="Close"
 							>
 								<CloseIcon className="w-5 h-5" />
 							</button>
@@ -185,7 +185,7 @@ export function RecommendationDrawer({ open, onClose, params = null }: Props) {
 											onClick={fetchMeal}
 											className="mt-4 rounded-xl px-4 py-2.5 text-sm font-medium bg-white/15 backdrop-blur-sm ring-[1px] ring-white/35 text-grey-dark hover:bg-white/25 hover:ring-white/45 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2"
 										>
-											Reintentar
+											Retry
 										</button>
 								</div>
 							)}
@@ -226,13 +226,13 @@ export function RecommendationDrawer({ open, onClose, params = null }: Props) {
 												onClick={onClose}
 												className="mt-3 inline-block text-sm font-medium text-primary hover:underline"
 											>
-												Ver receta completa
+												View full recipe
 											</Link>
 										</div>
 									)}
 									{feedbackEnabled && (
 										<div className={`${glassPanel} p-4`}>
-											<p className="text-sm font-medium text-grey-dark mb-2">¿Coincidió con tu preferencia?</p>
+											<p className="text-sm font-medium text-grey-dark mb-2">Did it match your preference?</p>
 											<div className="flex gap-2">
 												<button
 													type="button"
@@ -249,11 +249,11 @@ export function RecommendationDrawer({ open, onClose, params = null }: Props) {
 															matched: true,
 														});
 													}}
-													className={`${ghostButtonBase} bg-success/5 ring-success/30 text-success hover:bg-success/10 hover:ring-success/40 focus:ring-success/50`}
-													aria-label="Sí, coincidió"
+													className={`${ghostButtonBase} feedback-btn-yes ring-0`}
+													aria-label="Yes, it matched"
 												>
 													<LikeIcon size={20} />
-													<span>Sí</span>
+													<span>Yes</span>
 												</button>
 												<button
 													type="button"
@@ -270,8 +270,8 @@ export function RecommendationDrawer({ open, onClose, params = null }: Props) {
 															matched: false,
 														});
 													}}
-													className={`${ghostButtonBase} bg-error/5 ring-error/30 text-error hover:bg-error/10 hover:ring-error/40 focus:ring-error/50`}
-													aria-label="No, no coincidió"
+													className={`${ghostButtonBase} feedback-btn-no ring-0`}
+													aria-label="No, it did not match"
 												>
 													<DislikeIcon size={20} />
 													<span>No</span>
@@ -285,7 +285,7 @@ export function RecommendationDrawer({ open, onClose, params = null }: Props) {
 											onClick={fetchMeal}
 											className="w-full rounded-2xl bg-primary py-3 text-sm font-medium text-white hover:opacity-95 transition focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-white/80"
 										>
-											Nueva recomendación
+											New recommendation
 										</button>
 									</div>
 								</>

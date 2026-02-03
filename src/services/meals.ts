@@ -93,15 +93,8 @@ export async function getAreasWithThumb(): Promise<AreaWithThumb[]> {
 	return results;
 }
 
-/** Búsqueda cruzada: intersección por área y categoría, devuelve una receta (o fallback por área). */
-export async function getRecommendationByAreaAndCategory(
-	area: string,
-	category: string,
-): Promise<MealDetail | null> {
-	const [mealsByArea, mealsByCategory] = await Promise.all([
-		getMealsByArea(area),
-		getMealsByCategory(category),
-	]);
+export async function getRecommendationByAreaAndCategory(area: string, category: string): Promise<MealDetail | null> {
+	const [mealsByArea, mealsByCategory] = await Promise.all([getMealsByArea(area), getMealsByCategory(category)]);
 
 	const idsByArea = new Set(mealsByArea.map((m) => m.idMeal));
 	const intersection = mealsByCategory.filter((m) => idsByArea.has(m.idMeal));

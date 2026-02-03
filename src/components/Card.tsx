@@ -74,7 +74,7 @@ export function Card({ title, image, fit = 'contain', favoriteId, imageGradient 
 						type='button'
 						onClick={handleHeartClick}
 						className={`absolute top-2 right-2 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/80 backdrop-blur-sm hover:bg-white focus:outline-none focus:ring-2 focus:ring-primary ${favorited ? 'text-accent' : 'text-grey-dark'}`}
-						aria-label={favorited ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+						aria-label={favorited ? 'Remove from favorites' : 'Add to favorites'}
 					>
 						<HeartIcon filled={favorited} />
 					</button>

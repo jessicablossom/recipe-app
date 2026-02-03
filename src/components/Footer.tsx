@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { useRecommendation } from '@/contexts/RecommendationContext';
 import { useRecommendationFeedback } from '@/contexts/RecommendationFeedbackContext';
@@ -37,7 +38,32 @@ function SparkleIcon({ className }: { className?: string }) {
 	);
 }
 
+function FooterHeartIcon({
+	className,
+	filled,
+}: {
+	className?: string;
+	filled: boolean;
+}) {
+	return (
+		<svg
+			xmlns='http://www.w3.org/2000/svg'
+			viewBox='0 0 24 24'
+			fill={filled ? 'currentColor' : 'none'}
+			stroke='currentColor'
+			strokeWidth='1.5'
+			strokeLinecap='round'
+			strokeLinejoin='round'
+			className={className}
+			aria-hidden
+		>
+			<path d='M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z' />
+		</svg>
+	);
+}
+
 export function Footer() {
+	const [heartFilled, setHeartFilled] = useState(false);
 	const { openRecommendation } = useRecommendation();
 	const { feedbackList, feedbackEnabled, setFeedbackEnabled } = useRecommendationFeedback();
 
@@ -49,7 +75,7 @@ export function Footer() {
 						type='button'
 						onClick={() => openRecommendation()}
 						className={recommendationButton}
-						aria-label='Abrir recomendación instantánea'
+						aria-label='Open instant recommendation'
 					>
 						<div
 							className='absolute inset-0 rounded-2xl bg-gradient-to-br from-white/15 via-transparent to-transparent pointer-events-none'
@@ -64,10 +90,10 @@ export function Footer() {
 							</span>
 							<div className='min-w-0 flex-1'>
 								<div className='text-xs font-medium uppercase tracking-wider text-white/80'>
-									1 receta
+									1 recipe
 								</div>
 								<div className='mt-0.5 text-base font-semibold tracking-tight text-white'>
-									Recomendación instantánea
+									Instant recommendation
 								</div>
 							</div>
 						</div>
@@ -91,22 +117,22 @@ export function Footer() {
 									<Switch
 										checked={feedbackEnabled}
 										onChange={setFeedbackEnabled}
-										aria-label='Preguntar en recomendaciones y guardar historial'
+										aria-label='Ask in recommendations and save history'
 									/>
 									<span className='text-sm font-medium text-white/70' aria-hidden>
-										Sí
+										Yes
 									</span>
 								</div>
 							</div>
 							<div className='border-t border-white/20 pt-3'>
 								<div className='text-xs font-medium uppercase tracking-wider text-white/80 mb-2'>
-									Historial
+									History
 								</div>
 								{feedbackList.length === 0 ? (
 									<p className='text-sm text-white/70'>
 										{feedbackEnabled
-											? 'Responde Sí o No en una recomendación para ver el historial.'
-											: 'Activa el switch para preguntar y guardar.'}
+											? 'Answer Yes or No on a recommendation to see history.'
+											: 'Turn on the switch to ask and save.'}
 									</p>
 								) : (
 									<ul className='flex flex-col gap-2 max-h-32 overflow-y-auto'>
@@ -123,7 +149,7 @@ export function Footer() {
 												</Link>
 												<span
 													className='shrink-0 flex items-center justify-center rounded-full w-7 h-7 backdrop-blur-sm ring-[1px] ring-white/30 bg-white/20 text-white hover:bg-white/30 hover:ring-white/40 transition-colors'
-													aria-label={entry.matched ? 'Coincidió' : 'No coincidió'}
+													aria-label={entry.matched ? 'Matched' : 'Did not match'}
 												>
 													{entry.matched ? (
 														<LikeIcon size={14} variant='filled' />
@@ -139,6 +165,17 @@ export function Footer() {
 						</div>
 					</div>
 				</div>
+				<p className='mt-8 pt-6 border-t border-white/20 flex items-center justify-center gap-1.5 text-sm text-white'>
+					Made with love by Jess
+					<button
+						type='button'
+						onClick={() => setHeartFilled((f) => !f)}
+						className={`inline-flex items-center justify-center p-0.5 rounded focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-primary ${heartFilled ? 'text-accent' : ''}`}
+						aria-label={heartFilled ? 'Unfill heart' : 'Fill heart'}
+					>
+						<FooterHeartIcon className='w-4 h-4 shrink-0' filled={heartFilled} />
+					</button>
+				</p>
 			</div>
 		</footer>
 	);

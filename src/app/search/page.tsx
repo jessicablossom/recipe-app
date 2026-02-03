@@ -30,14 +30,14 @@ export default async function SearchPage({ searchParams }: Props) {
 			</div>
 			<main className="relative flex flex-col flex-1 gap-6 w-full max-w-5xl mx-auto px-4 py-8 md:px-16">
 				<h1 className={`text-3xl font-bold ${glassTitle}`}>
-					{query ? `Resultados para "${query}"` : 'Buscar recetas'}
+					{query ? `Results for "${query}"` : 'Search recipes'}
 				</h1>
 				{!query ? (
 					<p className="text-grey-dark/90">
-						Usá la caja de búsqueda en el menú y escribí el nombre de una receta.
+						Use the search box in the menu and type the name of a recipe.
 					</p>
 				) : meals.length === 0 ? (
-					<p className="text-grey-dark/90">No se encontraron recetas con ese nombre.</p>
+					<p className="text-grey-dark/90">No recipes found with that name.</p>
 				) : (
 					<CategoryMealsGrid meals={meals} />
 				)}

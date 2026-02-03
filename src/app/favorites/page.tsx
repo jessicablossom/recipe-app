@@ -99,11 +99,11 @@ export default function FavoritesPage() {
 				<div className="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent" aria-hidden />
 			</div>
 			<main className="relative flex flex-1 flex-col gap-6 w-full max-w-5xl mx-auto px-4 py-8 md:px-16">
-				<h1 className={`text-3xl font-bold ${glassTitle}`}>Favoritos</h1>
+				<h1 className={`text-3xl font-bold ${glassTitle}`}>Favorites</h1>
 
 				{isEmpty && (
 					<p className="text-grey-dark text-lg">
-						No tienes favoritos. Añade recetas, categorías o países desde la app para verlas aquí.
+						You have no favorites. Add recipes from the app to see them here.
 					</p>
 				)}
 
@@ -132,7 +132,7 @@ export default function FavoritesPage() {
 
 						{categoryFavorites.length > 0 && (
 							<section>
-								<h2 className={`text-xl font-semibold mb-4 ${glassTitle}`}>Por categoría</h2>
+								<h2 className={`text-xl font-semibold mb-4 ${glassTitle}`}>By category</h2>
 								<ul className="flex flex-wrap gap-3">
 									{categoryFavorites.map((fav) => (
 										<li key={fav.raw}>
@@ -150,7 +150,7 @@ export default function FavoritesPage() {
 
 						{areaFavorites.length > 0 && (
 							<section>
-								<h2 className={`text-xl font-semibold mb-4 ${glassTitle}`}>Por país</h2>
+								<h2 className={`text-xl font-semibold mb-4 ${glassTitle}`}>By country</h2>
 								<ul className="flex flex-wrap gap-3">
 									{areaFavorites.map((fav) => (
 										<li key={fav.raw}>

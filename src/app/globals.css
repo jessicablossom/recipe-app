@@ -54,3 +54,31 @@ body {
 .animate-card-in {
 	animation: card-fade-in 0.32s ease-out forwards;
 }
+
+.feedback-btn-yes {
+	background-color: rgb(var(--color-success) / 0.05);
+	color: rgb(var(--color-success));
+	box-shadow: 0 0 0 1px rgb(var(--color-success) / 0.4);
+}
+.feedback-btn-yes:hover {
+	background-color: rgb(var(--color-success) / 0.1);
+	box-shadow: 0 0 0 1px rgb(var(--color-success) / 0.5);
+}
+.feedback-btn-yes:focus-visible {
+	outline: 2px solid rgb(var(--color-success) / 0.5);
+	outline-offset: 2px;
+}
+
+.feedback-btn-no {
+	background-color: rgb(var(--color-error) / 0.05);
+	color: rgb(var(--color-error));
+	box-shadow: 0 0 0 1px rgb(var(--color-error) / 0.4);
+}
+.feedback-btn-no:hover {
+	background-color: rgb(var(--color-error) / 0.1);
+	box-shadow: 0 0 0 1px rgb(var(--color-error) / 0.5);
+}
+.feedback-btn-no:focus-visible {
+	outline: 2px solid rgb(var(--color-error) / 0.5);
+	outline-offset: 2px;
+}

@@ -1,36 +1,85 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Recipe App
 
-## Getting Started
+Web app for recipes with search, filters by category and country, recommendations, and favorites. Uses [TheMealDB](https://www.themealdb.com/) and is built with Next.js and a glass / iOS-style UI.
 
-First, run the development server:
+---
+
+## What the app does
+
+The app lets you:
+
+- **Browse recipes** by category (e.g. Beef, Dessert) or by country/area (e.g. British, Mexican).
+- **Search** recipes by name from the global search bar.
+- **Get recommendations** at random or filtered by cuisine and category from the Hero (home) or footer.
+- **Save favorites** (recipes only) and view recommendation history with feedback (Yes/No).
+- **View details** for each recipe: ingredients, instructions, image, and related links.
+
+The UI uses a **glass / iOS** style (backdrop blur, ghost chips, soft ring buttons) and is designed for mobile and desktop.
+
+---
+
+## Stack
+
+- **Next.js 16** (App Router), **React 19**, **TypeScript**, **Tailwind CSS**.
+- **TheMealDB** as the only data source (public API).
+- **Routes**:
+  - `/` — Home with Hero (area + category wizard → recommendation)
+  - `/categories` — Listing with “By category” / “By country” filter, A–Z / Z–A sort
+  - `/category/[category]` — Recipes by category with infinite scroll
+  - `/area/[area]` — Recipes by country/area
+  - `/meal/[id]` — Recipe detail (ingredients, instructions, image)
+  - `/search?q=...` — Search results by name
+  - `/favorites` — Favorites (recipes only)
+- **Reusable components**: `Card`, `SearchBox`, `RecipeImage`, `FavoriteButton`, `Switch`, chips and ghost buttons.
+- **Internal APIs**: `/api/areas`, `/api/categories`, `/api/meals/[id]`, `/api/meals/random`, `/api/meals/recommend`, `/api/search`.
+- **Persistence**: `localStorage` for favorites, feedback preference, and recommendation history.
+- **404** and custom error page.
+
+---
+
+## How to run
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Production build:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm start
+```
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## Pending / possible improvements
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Tests**: unit tests (services, utils, hooks) and/or E2E (main flows: search, favorites, recommendation).
+- **Accessibility**: review contrast, focus, labels, and keyboard navigation in SearchBox, drawer, and chips.
+- **Deploy**: configure Vercel and env vars for APIs or feature flags.
+- **“Recent views” in UI**: recipe view history exists in context but there is no screen or block showing it yet.
+- **PWA / offline**: consider service worker and cache for recently viewed recipes.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## Relevant structure
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+src/
+├── app/              # Routes (page, layout, not-found, api)
+├── components/       # NavBar, Hero, Card, Footer, CategoriesWithFilter, RecommendationDrawer, etc.
+├── contexts/         # Search, Recommendation, RecommendationFeedback, Favorites, RecipeHistory
+├── services/         # meals.ts (TheMealDB), mealDbClient
+├── hooks/            # usePersistedPreference
+├── utils/            # mealImage, parseIngredients
+└── store/            # Redux (StoreProvider, appSlice)
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## License
+
+Internal / educational use. TheMealDB has its own usage policy.

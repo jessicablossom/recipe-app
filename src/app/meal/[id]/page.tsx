@@ -73,8 +73,6 @@ export default async function MealPage({ params }: Props) {
 						<FavoriteButton favoriteId={`meal:${meal.idMeal}`} />
 					</div>
 				</header>
-
-				{/* Imagen principal: receta o fallback (glass + logo) */}
 				<div
 					className={`relative w-full overflow-hidden rounded-2xl ${glassPanel} aspect-[4/3] max-h-[380px] ring-1 ring-white/30`}
 				>
@@ -94,7 +92,7 @@ export default async function MealPage({ params }: Props) {
 				</div>
 
 				<section className={`${glassPanel} p-5 md:p-6`}>
-					<h2 className='text-lg font-semibold text-grey-dark md:text-xl'>Ingredientes</h2>
+					<h2 className='text-lg font-semibold text-grey-dark md:text-xl'>Ingredients</h2>
 					<ul className='mt-4 flex flex-wrap gap-2'>
 						{ingredients.map((item, index) => (
 							<li
@@ -109,7 +107,7 @@ export default async function MealPage({ params }: Props) {
 				</section>
 
 				<section className={`${glassPanel} p-5 md:p-6`}>
-					<h2 className='text-lg font-semibold text-grey-dark md:text-xl'>Preparación</h2>
+					<h2 className='text-lg font-semibold text-grey-dark md:text-xl'>Instructions</h2>
 					<div className='mt-4 whitespace-pre-wrap rounded-xl bg-white/20 p-4 text-grey-dark leading-relaxed ring-1 ring-white/25 md:p-5'>
 						{meal.strInstructions}
 					</div>

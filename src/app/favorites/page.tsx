@@ -2,13 +2,15 @@
 
 import { useFavorites } from '@/contexts/FavoritesContext';
 import { useEffect, useMemo, useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { Card } from '@/components/Card';
 import type { MealByCategory } from '@/services/meals';
 
 type ParsedFavorite =
 	| { type: 'meal'; id: string; raw: string }
-	| { type: 'category'; name: string; raw: string };
+	| { type: 'category'; name: string; raw: string }
+	| { type: 'area'; name: string; raw: string };
 
 function parseFavorite(raw: string): ParsedFavorite | null {
 	if (raw.startsWith('meal:')) {
@@ -19,6 +21,10 @@ function parseFavorite(raw: string): ParsedFavorite | null {
 		const name = raw.slice(9).trim();
 		return name ? { type: 'category', name: decodeURIComponent(name), raw } : null;
 	}
+	if (raw.startsWith('area:')) {
+		const name = raw.slice(5).trim();
+		return name ? { type: 'area', name: decodeURIComponent(name), raw } : null;
+	}
 	return null;
 }
 
@@ -27,7 +33,7 @@ const glassTitle =
 
 function CardSkeleton() {
 	return (
-		<div className="aspect-square min-w-[160px] rounded-2xl bg-white/15 backdrop-blur-xl ring-1 ring-white/25 animate-skeleton-pulse" />
+		<div className="aspect-square min-w-[200px] rounded-2xl bg-white/15 backdrop-blur-xl ring-1 ring-white/25 animate-skeleton-pulse" />
 	);
 }
 
@@ -45,6 +51,7 @@ export default function FavoritesPage() {
 
 	const mealFavorites = useMemo(() => parsed.filter((p): p is ParsedFavorite & { type: 'meal' } => p.type === 'meal'), [parsed]);
 	const categoryFavorites = useMemo(() => parsed.filter((p): p is ParsedFavorite & { type: 'category' } => p.type === 'category'), [parsed]);
+	const areaFavorites = useMemo(() => parsed.filter((p): p is ParsedFavorite & { type: 'area' } => p.type === 'area'), [parsed]);
 
 	useEffect(() => {
 		if (mealFavorites.length === 0) {
@@ -78,13 +85,25 @@ export default function FavoritesPage() {
 	const isEmpty = parsed.length === 0;
 
 	return (
-		<div className="relative flex min-h-screen flex-col bg-grey-light">
+		<div className="relative flex min-h-screen flex-col">
+			<div className="absolute inset-0 overflow-hidden">
+				<Image
+					src="/assets/hero-image.jpg"
+					alt=""
+					fill
+					className="object-cover blur-xl scale-105"
+					sizes="100vw"
+					priority={false}
+				/>
+				<div className="absolute inset-0 bg-grey-light/50" aria-hidden />
+				<div className="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent" aria-hidden />
+			</div>
 			<main className="relative flex flex-1 flex-col gap-6 w-full max-w-5xl mx-auto px-4 py-8 md:px-16">
 				<h1 className={`text-3xl font-bold ${glassTitle}`}>Favoritos</h1>
 
 				{isEmpty && (
 					<p className="text-grey-dark text-lg">
-						No tienes favoritos. Añade recetas o categorías desde la app para verlas aquí.
+						No tienes favoritos. Añade recetas, categorías o países desde la app para verlas aquí.
 					</p>
 				)}
 
@@ -92,7 +111,7 @@ export default function FavoritesPage() {
 					<>
 						{mealFavorites.length > 0 && (
 							<section>
-								<div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+								<div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 									{mealList.map(({ fav, data }) => (
 										<div key={fav.raw} className="animate-card-in">
 											<Link href={`/meal/${data.idMeal}`}>
@@ -113,12 +132,30 @@ export default function FavoritesPage() {
 
 						{categoryFavorites.length > 0 && (
 							<section>
-								<h2 className={`text-xl font-semibold mb-4 ${glassTitle}`}>Categorías</h2>
+								<h2 className={`text-xl font-semibold mb-4 ${glassTitle}`}>Por categoría</h2>
 								<ul className="flex flex-wrap gap-3">
 									{categoryFavorites.map((fav) => (
 										<li key={fav.raw}>
 											<Link
 												href={`/category/${encodeURIComponent(fav.name)}`}
+												className="inline-flex items-center rounded-full bg-white/20 backdrop-blur-md ring-1 ring-white/30 px-4 py-2 text-grey-dark font-medium hover:bg-white/30 hover:ring-white/40 transition"
+											>
+												{fav.name}
+											</Link>
+										</li>
+									))}
+								</ul>
+							</section>
+						)}
+
+						{areaFavorites.length > 0 && (
+							<section>
+								<h2 className={`text-xl font-semibold mb-4 ${glassTitle}`}>Por país</h2>
+								<ul className="flex flex-wrap gap-3">
+									{areaFavorites.map((fav) => (
+										<li key={fav.raw}>
+											<Link
+												href={`/area/${encodeURIComponent(fav.name)}`}
 												className="inline-flex items-center rounded-full bg-white/20 backdrop-blur-md ring-1 ring-white/30 px-4 py-2 text-grey-dark font-medium hover:bg-white/30 hover:ring-white/40 transition"
 											>
 												{fav.name}

@@ -1,0 +1,47 @@
+import Image from 'next/image';
+import { CategoryMealsGrid } from '@/components/category/CategoryMealsGrid';
+import { searchMealsByName } from '@/services/meals';
+
+type Props = {
+	searchParams: Promise<{ q?: string }>;
+};
+
+const glassTitle =
+	'inline-flex w-fit items-center rounded-full bg-white/20 backdrop-blur-md ring-1 ring-white/30 px-4 py-2 text-grey-dark';
+
+export default async function SearchPage({ searchParams }: Props) {
+	const { q } = await searchParams;
+	const query = (q ?? '').trim();
+	const meals = query ? await searchMealsByName(query) : [];
+
+	return (
+		<div className="relative flex min-h-screen flex-col">
+			<div className="absolute inset-0 overflow-hidden">
+				<Image
+					src="/assets/hero-image.jpg"
+					alt=""
+					fill
+					className="object-cover blur-xl scale-105"
+					sizes="100vw"
+					priority={false}
+				/>
+				<div className="absolute inset-0 bg-grey-light/50" aria-hidden />
+				<div className="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent" aria-hidden />
+			</div>
+			<main className="relative flex flex-col flex-1 gap-6 w-full max-w-5xl mx-auto px-4 py-8 md:px-16">
+				<h1 className={`text-3xl font-bold ${glassTitle}`}>
+					{query ? `Resultados para "${query}"` : 'Buscar recetas'}
+				</h1>
+				{!query ? (
+					<p className="text-grey-dark/90">
+						Usá la caja de búsqueda en el menú y escribí el nombre de una receta.
+					</p>
+				) : meals.length === 0 ? (
+					<p className="text-grey-dark/90">No se encontraron recetas con ese nombre.</p>
+				) : (
+					<CategoryMealsGrid meals={meals} />
+				)}
+			</main>
+		</div>
+	);
+}

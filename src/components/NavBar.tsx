@@ -30,9 +30,14 @@ function HeartIcon({ filled }: { filled: boolean }) {
 	);
 }
 
-function navLinkClass(pathname: string, href: string, isHome: boolean): string {
+function navLinkClass(
+	pathname: string,
+	href: string,
+	isHome: boolean,
+	searchOpen: boolean,
+): string {
 	const base = 'inline-block py-2 transition';
-	const active = pathname === href;
+	const active = pathname === href && !searchOpen;
 	if (active) {
 		return isHome
 			? `${base} text-primary border-b-[3px] border-primary font-medium`
@@ -66,7 +71,7 @@ export function NavBar() {
 				<ul className='flex items-center gap-6'>
 					{NAV_LINKS.map(({ href, label }) => (
 						<li key={href}>
-							<Link href={href} className={navLinkClass(pathname, href, isHome)}>
+							<Link href={href} className={navLinkClass(pathname, href, isHome, searchOpen)}>
 								{label}
 							</Link>
 						</li>
@@ -91,7 +96,7 @@ export function NavBar() {
 					<li>
 						<Link
 							href="/favorites"
-							className={navLinkClass(pathname, '/favorites', isHome)}
+							className={navLinkClass(pathname, '/favorites', isHome, searchOpen)}
 							aria-label="Favoritos"
 						>
 							<HeartIcon filled={pathname === '/favorites'} />

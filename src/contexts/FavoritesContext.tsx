@@ -1,13 +1,6 @@
 'use client';
 
-import {
-	createContext,
-	useCallback,
-	useContext,
-	useEffect,
-	useState,
-	type ReactNode,
-} from 'react';
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
 
 const FAVORITES_KEY = 'recipe-app:favorites';
 
@@ -27,7 +20,7 @@ function setStoredFavorites(ids: string[]): void {
 	try {
 		localStorage.setItem(FAVORITES_KEY, JSON.stringify(ids));
 	} catch {
-		// ignore
+		console.log('log error');
 	}
 }
 
@@ -67,11 +60,7 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
 		toggleFavorite,
 	};
 
-	return (
-		<FavoritesContext.Provider value={value}>
-			{children}
-		</FavoritesContext.Provider>
-	);
+	return <FavoritesContext.Provider value={value}>{children}</FavoritesContext.Provider>;
 }
 
 export function useFavorites(): FavoritesContextValue {

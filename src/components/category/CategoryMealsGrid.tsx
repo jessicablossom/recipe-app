@@ -6,14 +6,14 @@ import { Card } from '@/components/Card';
 import type { MealByCategory } from '@/services/meals';
 
 const INITIAL_PAGE_SIZE = 12;
-const ROW_SIZE = 4;
+const ROW_SIZE = 3;
 const OBSERVER_ROOT_MARGIN_PX = 80;
 const SCROLL_LOAD_MARGIN_PX = 120;
 const LOADING_DELAY_MS = 750;
 
 function CardSkeleton() {
 	return (
-		<div className='aspect-square min-w-[160px] rounded-2xl bg-white/15 backdrop-blur-xl ring-1 ring-white/25 animate-skeleton-pulse' />
+		<div className='aspect-square min-w-[200px] rounded-2xl bg-white/15 backdrop-blur-xl ring-1 ring-white/25 animate-skeleton-pulse' />
 	);
 }
 
@@ -88,7 +88,7 @@ export function CategoryMealsGrid({ meals }: Props) {
 
 	return (
 		<>
-			<div className='w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
+			<div className='w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
 				{visibleMeals.map((meal, index) => (
 					<div key={meal.idMeal} className={index >= INITIAL_PAGE_SIZE ? 'animate-card-in' : undefined}>
 						<Link href={`/meal/${meal.idMeal}`}>

@@ -1,7 +1,7 @@
 'use client';
 
-import Image from 'next/image';
 import { useFavorites } from '@/contexts/FavoritesContext';
+import { RecipeImage } from '@/components/ui/RecipeImage';
 
 type ImageFit = 'contain' | 'cover';
 
@@ -19,7 +19,7 @@ const fitClasses: Record<ImageFit, string> = {
 };
 
 const glassCard =
-	'rounded-2xl bg-white/20 ring-1 ring-white/30 shadow-[0_8px_32px_-12px_rgba(0,0,0,0.12)] aspect-square min-w-[160px] flex flex-col overflow-hidden transition hover:bg-white/25 hover:ring-white/40 hover:shadow-[0_12px_40px_-12px_rgba(0,0,0,0.18)] hover:-translate-y-0.5';
+	'rounded-2xl bg-white/20 ring-1 ring-white/30 shadow-[0_8px_32px_-12px_rgba(0,0,0,0.12)] aspect-square min-w-[200px] flex flex-col overflow-hidden transition hover:bg-white/25 hover:ring-white/40 hover:shadow-[0_12px_40px_-12px_rgba(0,0,0,0.18)] hover:-translate-y-0.5';
 
 const HeartIcon = ({ filled }: { filled: boolean }) => {
 	return (
@@ -51,13 +51,14 @@ export function Card({ title, image, fit = 'contain', favoriteId, imageGradient 
 
 	return (
 		<div className={glassCard}>
-			<div className='relative flex-1 min-h-0 w-full overflow-hidden rounded-t-2xl flex-shrink-0'>
-				<Image
+			<div className='relative flex-1 min-h-0 w-full overflow-hidden rounded-t-2xl'>
+				<div className='absolute inset-0 overflow-hidden rounded-t-2xl'>
+					<RecipeImage
 					src={image}
 					alt={title}
-					fill
 					className={fitClasses[fit]}
 					sizes='(max-width: 768px) 100vw, 25vw'
+					roundedClass='rounded-t-2xl'
 				/>
 				{imageGradient && (
 					<>
@@ -78,6 +79,7 @@ export function Card({ title, image, fit = 'contain', favoriteId, imageGradient 
 						<HeartIcon filled={favorited} />
 					</button>
 				)}
+				</div>
 			</div>
 			<span
 				className='text-base font-medium text-grey-dark tracking-wide truncate p-3 text-center flex-shrink-0'

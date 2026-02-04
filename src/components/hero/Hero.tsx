@@ -8,12 +8,9 @@ import type { RootState, AppDispatch } from '@/store';
 import { clearHeroPreference, setHeroArea, setHeroCategory } from '@/store/slices/appSlice';
 import { HERO_PREFERENCE_AREA_KEY, HERO_PREFERENCE_CATEGORY_KEY } from '@/constants/storageKeys';
 
-type Step = 1 | 2;
-
 const CAROUSEL_MAX_WIDTH = '32rem';
 
 export function Hero() {
-	const [step, setStep] = useState<Step>(1);
 	const dispatch = useDispatch<AppDispatch>();
 	const area = useSelector((state: RootState) => state.app.heroPreference.area);
 	const constraint = useSelector((state: RootState) => state.app.heroPreference.category);
@@ -32,7 +29,6 @@ export function Hero() {
 		if (storedArea || storedCategory) {
 			dispatch(setHeroArea(storedArea));
 			dispatch(setHeroCategory(storedCategory));
-			setStep(storedArea ? 2 : 1);
 		}
 	}, [dispatch]);
 
@@ -75,9 +71,10 @@ export function Hero() {
 			window.localStorage.removeItem(HERO_PREFERENCE_AREA_KEY);
 			window.localStorage.removeItem(HERO_PREFERENCE_CATEGORY_KEY);
 		}
-		setStep(1);
 		lastTriggerRef.current = null;
 	};
+	const step = area ? 2 : 1;
+
 
 	return (
 		<section className='relative w-full min-h-[100dvh] md:min-h-[90vh] flex flex-col -mt-16 pt-16'>
@@ -170,7 +167,6 @@ export function Hero() {
 																		HERO_PREFERENCE_CATEGORY_KEY,
 																	);
 																}
-																setStep(nextArea ? 2 : 1);
 															}}
 															className={[
 																'px-3 py-2 rounded-full text-sm whitespace-nowrap transition shrink-0',

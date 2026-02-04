@@ -67,12 +67,12 @@ export default async function MealPage({ params }: Props) {
 				<header className={`${glassPanel} p-5 md:p-6`}>
 					<div className='flex items-start justify-between gap-4'>
 						<div className='min-w-0 flex-1'>
-							<h1 className='text-2xl font-bold tracking-tight text-grey-dark md:text-3xl'>
+							<h1 className='text-2xl font-bold tracking-tight text-grey-dark md:text-3xl capitalize'>
 								{meal.strMeal}
 							</h1>
 							<div className='mt-3 flex flex-wrap gap-2'>
-								<span className={glassBadge}>{meal.strCategory}</span>
-								<span className={glassBadge}>{meal.strArea}</span>
+								<span className={`${glassBadge} capitalize`}>{meal.strCategory}</span>
+								<span className={`${glassBadge} capitalize`}>{meal.strArea}</span>
 							</div>
 						</div>
 						<FavoriteButton favoriteId={`meal:${meal.idMeal}`} />
@@ -104,8 +104,10 @@ export default async function MealPage({ params }: Props) {
 								key={`${index}-${item.ingredient}-${item.measure}`}
 								className='rounded-xl bg-white/35 px-3 py-2 text-sm text-grey-dark ring-1 ring-white/40'
 							>
-								<span className='font-medium'>{item.ingredient}</span>
-								{item.measure && <span className='ml-1.5 text-grey-medium'>· {item.measure}</span>}
+								<span className='font-medium capitalize'>{item.ingredient}</span>
+								{item.measure && (
+									<span className='ml-1.5 text-grey-medium capitalize'>· {item.measure}</span>
+								)}
 							</li>
 						))}
 					</ul>
@@ -113,7 +115,7 @@ export default async function MealPage({ params }: Props) {
 
 				<section className={`${glassPanel} p-5 md:p-6`}>
 					<h2 className='text-lg font-semibold text-grey-dark md:text-xl'>Instructions</h2>
-					<div className='mt-4 whitespace-pre-wrap rounded-xl bg-white/20 p-4 text-grey-dark leading-relaxed ring-1 ring-white/25 md:p-5'>
+					<div className='mt-4 whitespace-pre-wrap capitalize rounded-xl bg-white/20 p-4 text-grey-dark leading-relaxed ring-1 ring-white/25 md:p-5'>
 						{meal.strInstructions}
 					</div>
 				</section>

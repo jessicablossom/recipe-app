@@ -1,8 +1,12 @@
 'use client';
 
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useRecommendation } from '@/contexts/RecommendationContext';
+import type { RootState, AppDispatch } from '@/store';
+import { clearHeroPreference, setHeroArea, setHeroCategory } from '@/store/slices/appSlice';
+import { HERO_PREFERENCE_AREA_KEY, HERO_PREFERENCE_CATEGORY_KEY } from '@/constants/storageKeys';
 
 type Step = 1 | 2;
 
@@ -10,13 +14,27 @@ const CAROUSEL_MAX_WIDTH = '32rem';
 
 export function Hero() {
 	const [step, setStep] = useState<Step>(1);
-	const [area, setArea] = useState<string>('');
-	const [constraint, setConstraint] = useState<string>('');
+	const dispatch = useDispatch<AppDispatch>();
+	const area = useSelector((state: RootState) => state.app.heroPreference.area);
+	const constraint = useSelector((state: RootState) => state.app.heroPreference.category);
 	const [areas, setAreas] = useState<string[]>([]);
 	const [areasLoading, setAreasLoading] = useState(true);
 	const [categories, setCategories] = useState<string[]>([]);
 	const [categoriesLoading, setCategoriesLoading] = useState(true);
 	const { openRecommendation } = useRecommendation();
+	const lastTriggerRef = useRef<{ key: string } | null>(null);
+	const isTriggeringRef = useRef(false);
+
+	useEffect(() => {
+		if (typeof window === 'undefined') return;
+		const storedArea = window.localStorage.getItem(HERO_PREFERENCE_AREA_KEY) ?? '';
+		const storedCategory = window.localStorage.getItem(HERO_PREFERENCE_CATEGORY_KEY) ?? '';
+		if (storedArea || storedCategory) {
+			dispatch(setHeroArea(storedArea));
+			dispatch(setHeroCategory(storedCategory));
+			setStep(storedArea ? 2 : 1);
+		}
+	}, [dispatch]);
 
 	useEffect(() => {
 		Promise.all([fetch('/api/areas').then((res) => res.json()), fetch('/api/categories').then((res) => res.json())])
@@ -34,23 +52,32 @@ export function Hero() {
 			});
 	}, []);
 
-	const onNext = () => {
-		if (step === 1 && area) setStep(2);
+	const triggerRecommendation = (selectedArea: string, selectedCategory: string) => {
+		const key = `${selectedArea}||${selectedCategory}`;
+		const last = lastTriggerRef.current;
+
+		if (isTriggeringRef.current && last && last.key === key) {
+			return;
+		}
+
+		lastTriggerRef.current = { key };
+		isTriggeringRef.current = true;
+		openRecommendation({ area: selectedArea, category: selectedCategory });
+
+		window.setTimeout(() => {
+			isTriggeringRef.current = false;
+		}, 500);
 	};
 
-	const onBack = () => {
-		if (step === 2) setStep(1);
+	const handleClear = () => {
+		dispatch(clearHeroPreference());
+		if (typeof window !== 'undefined') {
+			window.localStorage.removeItem(HERO_PREFERENCE_AREA_KEY);
+			window.localStorage.removeItem(HERO_PREFERENCE_CATEGORY_KEY);
+		}
+		setStep(1);
+		lastTriggerRef.current = null;
 	};
-
-	const onSubmit = (e: React.FormEvent) => {
-		e.preventDefault();
-		if (!area || !constraint) return;
-		openRecommendation({ area, category: constraint });
-	};
-
-	const buttonBase =
-		'inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-accent disabled:opacity-40 disabled:cursor-not-allowed';
-	const buttonPrimary = `${buttonBase} bg-white text-grey-dark shadow-[0_14px_40px_-28px_rgba(0,0,0,0.9)] hover:opacity-95`;
 
 	return (
 		<section className='relative w-full min-h-[100dvh] md:min-h-[90vh] flex flex-col -mt-16 pt-16'>
@@ -71,12 +98,12 @@ export function Hero() {
 				<div className='mx-auto w-full max-w-5xl min-w-0'>
 					<div className='grid gap-4 md:gap-6 lg:grid-cols-[1fr_1.15fr] items-center min-w-0'>
 						<div className='space-y-4 min-w-0'>
-							<div className='inline-flex items-center rounded-full bg-white/15 ring-1 ring-white/20 px-3 py-1 text-sm text-white/85'>
+							<div className='inline-flex items-center backdrop-blur rounded-full bg-white/25 ring-1 ring-white/20 px-3 py-1 text-base text-white/100'>
 								Recipe recommender
 							</div>
 
 							<h1 className='text-4xl md:text-6xl font-semibold text-white tracking-tight leading-[1.02]'>
-								Pick 2 preferences and get 1 recipe
+								Pick 2 and get 1 recipe
 							</h1>
 
 							<p className='text-white/75 text-base md:text-lg max-w-xl leading-relaxed'>
@@ -87,7 +114,7 @@ export function Hero() {
 						<div className='relative min-w-0 max-w-full overflow-hidden rounded-[28px] bg-white/12 backdrop-blur-2xl ring-1 ring-white/25 shadow-[0_12px_40px_-20px_rgba(0,0,0,0.65)] p-5 md:p-6'>
 							<div className='pointer-events-none absolute inset-0 rounded-[28px] bg-gradient-to-br from-white/22 via-white/6 to-transparent' />
 							<div className='pointer-events-none absolute inset-0 rounded-[28px] ring-1 ring-black/10' />
-							<form onSubmit={onSubmit} className='relative space-y-4 min-w-0'>
+							<form onSubmit={(e) => e.preventDefault()} className='relative space-y-4 min-w-0'>
 								<div className='flex items-center justify-between gap-3'>
 									<div className='flex items-center gap-2'>
 										<span
@@ -99,37 +126,11 @@ export function Hero() {
 											aria-hidden
 										/>
 									</div>
-									<div className='flex items-center gap-4'>
-										{step === 2 && (
-											<button
-												type='button'
-												onClick={onBack}
-												className='text-white/90 hover:text-white underline underline-offset-2 text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-primary rounded'
-											>
-												Clear
-											</button>
-										)}
-										{step === 1 ? (
-											<button
-												type='button'
-												onClick={onNext}
-												disabled={!area}
-												className={buttonPrimary}
-											>
-												Next
-											</button>
-										) : (
-											<button type='submit' disabled={!constraint} className={buttonPrimary}>
-												Recommend
-											</button>
-										)}
-									</div>
 								</div>
 
 								<div className='space-y-2 min-w-0'>
 									<div className='flex items-center justify-between'>
 										<label className='text-sm font-medium text-white'>Cuisine / Area</label>
-										{area ? <span className='text-xs text-primary/90'>Selected</span> : null}
 									</div>
 
 									<div
@@ -151,8 +152,25 @@ export function Hero() {
 															key={a}
 															type='button'
 															onClick={() => {
-																setArea(isActive ? '' : a);
-																setConstraint('');
+																const nextArea = isActive ? '' : a;
+																dispatch(setHeroArea(nextArea));
+																dispatch(setHeroCategory(''));
+																if (typeof window !== 'undefined') {
+																	if (nextArea) {
+																		window.localStorage.setItem(
+																			HERO_PREFERENCE_AREA_KEY,
+																			nextArea,
+																		);
+																	} else {
+																		window.localStorage.removeItem(
+																			HERO_PREFERENCE_AREA_KEY,
+																		);
+																	}
+																	window.localStorage.removeItem(
+																		HERO_PREFERENCE_CATEGORY_KEY,
+																	);
+																}
+																setStep(nextArea ? 2 : 1);
 															}}
 															className={[
 																'px-3 py-2 rounded-full text-sm whitespace-nowrap transition shrink-0',
@@ -177,9 +195,6 @@ export function Hero() {
 											<label htmlFor='constraint' className='text-sm font-medium text-white'>
 												Category
 											</label>
-											{constraint ? (
-												<span className='text-xs text-secondary/90'>Selected</span>
-											) : null}
 										</div>
 										<div
 											className='w-full min-w-0 overflow-x-auto overflow-y-hidden scroll-smooth py-1 -mx-1 px-1 overscroll-x-contain touch-pan-x'
@@ -199,7 +214,25 @@ export function Hero() {
 															<button
 																key={c}
 																type='button'
-																onClick={() => setConstraint(isActive ? '' : c)}
+																onClick={() => {
+																	const nextConstraint = isActive ? '' : c;
+																	dispatch(setHeroCategory(nextConstraint));
+																	if (typeof window !== 'undefined') {
+																		if (nextConstraint) {
+																			window.localStorage.setItem(
+																				HERO_PREFERENCE_CATEGORY_KEY,
+																				nextConstraint,
+																			);
+																		} else {
+																			window.localStorage.removeItem(
+																				HERO_PREFERENCE_CATEGORY_KEY,
+																			);
+																		}
+																	}
+																	if (nextConstraint && area) {
+																		triggerRecommendation(area, nextConstraint);
+																	}
+																}}
 																className={[
 																	'px-3 py-2 rounded-full text-sm whitespace-nowrap transition shrink-0',
 																	'focus:outline-none focus:ring-2 focus:ring-secondary',
@@ -221,8 +254,18 @@ export function Hero() {
 								<p className='text-xs text-white/75'>
 									{step === 1
 										? 'Pick an area to continue.'
-										: 'Pick the category and request a recommendation.'}
+										: 'Pick the category and we will auto-recommend.'}
 								</p>
+
+								<button
+									type='button'
+									onClick={handleClear}
+									className={`mt-1 text-xs font-medium text-white/85 hover:underline hover:underline-offset-2 hover:text-white transition ${
+										area || constraint ? 'opacity-100' : 'opacity-0 pointer-events-none'
+									}`}
+								>
+									Clear selections
+								</button>
 							</form>
 						</div>
 					</div>

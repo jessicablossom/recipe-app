@@ -65,6 +65,7 @@ function setStoredFeedback(entries: RecommendationFeedbackEntry[]): void {
 type RecommendationFeedbackContextValue = {
 	feedbackList: RecommendationFeedbackEntry[];
 	addFeedback: (entry: RecommendationFeedbackEntry) => void;
+	removeFeedback: (idMeal: string, timestamp: number) => void;
 	feedbackEnabled: boolean;
 	setFeedbackEnabled: (value: boolean) => void;
 };
@@ -101,7 +102,16 @@ export function RecommendationFeedbackProvider({ children }: { children: ReactNo
 
 	const addFeedback = useCallback((entry: RecommendationFeedbackEntry) => {
 		setFeedbackList((prev) => {
-			const next = [entry, ...prev].slice(0, MAX_RECOMMENDATION_FEEDBACK_ENTRIES);
+			const filtered = prev.filter((e) => e.idMeal !== entry.idMeal);
+			const next = [entry, ...filtered].slice(0, MAX_RECOMMENDATION_FEEDBACK_ENTRIES);
+			setStoredFeedback(next);
+			return next;
+		});
+	}, []);
+
+	const removeFeedback = useCallback((idMeal: string, timestamp: number) => {
+		setFeedbackList((prev) => {
+			const next = prev.filter((entry) => !(entry.idMeal === idMeal && entry.timestamp === timestamp));
 			setStoredFeedback(next);
 			return next;
 		});
@@ -109,7 +119,7 @@ export function RecommendationFeedbackProvider({ children }: { children: ReactNo
 
 	return (
 		<RecommendationFeedbackContext.Provider
-			value={{ feedbackList, addFeedback, feedbackEnabled, setFeedbackEnabled }}
+			value={{ feedbackList, addFeedback, removeFeedback, feedbackEnabled, setFeedbackEnabled }}
 		>
 			{children}
 		</RecommendationFeedbackContext.Provider>

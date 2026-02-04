@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
+import { lockBodyScroll, unlockBodyScroll } from '@/utils/bodyScrollLock';
 
 type Props = {
 	open: boolean;
@@ -101,6 +102,14 @@ export function SearchBox({ open, onClose, isHome = false }: Props) {
 		window.addEventListener('keydown', handleKeyDown);
 		return () => window.removeEventListener('keydown', handleKeyDown);
 	}, [open, onClose]);
+
+	useEffect(() => {
+		if (!open) return;
+		lockBodyScroll();
+		return () => {
+			unlockBodyScroll();
+		};
+	}, [open]);
 
 	useEffect(() => {
 		if (debounceRef.current) clearTimeout(debounceRef.current);

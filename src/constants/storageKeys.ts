@@ -9,3 +9,5 @@ export const MAX_RECIPE_HISTORY_ENTRIES = 3;
 
 export const PREFERENCE_STORAGE_PREFIX = 'recipe-app';
 
+export const HERO_PREFERENCE_AREA_KEY = 'hero:area';
+export const HERO_PREFERENCE_CATEGORY_KEY = 'hero:category';

@@ -83,6 +83,16 @@ body {
 	outline-offset: 2px;
 }
 
+.feedback-btn-yes-selected {
+	background-color: rgb(var(--color-success-light));
+	box-shadow: 0 0 0 2px rgb(var(--color-success) / 0.7);
+}
+
+.feedback-btn-no-selected {
+	background-color: rgb(var(--color-error-light));
+	box-shadow: 0 0 0 2px rgb(var(--color-error) / 0.7);
+}
+
 .grid-scroll-3-rows {
 	max-height: 72vh;
 	overflow-y: auto;
@@ -92,4 +102,3 @@ body {
 .grid-scroll-3-rows::-webkit-scrollbar {
 	display: none;
 }
-

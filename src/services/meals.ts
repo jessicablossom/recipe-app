@@ -1,3 +1,4 @@
+import { unstable_cache } from 'next/cache';
 import {
 	mealdbGet,
 	mealdbGetCached,
@@ -7,6 +8,8 @@ import {
 	type MealDBMealListItem,
 	type MealDBMealDetail,
 } from '@/lib/mealdb';
+
+const LIST_REVALIDATE_SECONDS = 3600;
 
 export type Category = {
 	idCategory: string;
@@ -36,10 +39,17 @@ export type MealDetail = {
 	[key: `strMeasure${number}`]: string | null;
 };
 
-export async function getCategories(): Promise<Category[]> {
+async function getCategoriesUncached(): Promise<Category[]> {
 	const data = await mealdbGetCached<MealDBCategoriesResponse>('/categories.php');
 	const list = Array.isArray(data?.categories) ? data.categories : [];
 	return list as Category[];
+}
+
+export async function getCategories(): Promise<Category[]> {
+	return unstable_cache(getCategoriesUncached, ['mealdb-categories'], {
+		revalidate: LIST_REVALIDATE_SECONDS,
+		tags: ['mealdb-lists'],
+	})();
 }
 
 export async function getMealsByCategory(category: string): Promise<MealByCategory[]> {
@@ -66,14 +76,24 @@ export async function getMealById(id: string): Promise<MealDetail | null> {
 	return meal as MealDetail | null;
 }
 
-export async function searchMealsByName(query: string): Promise<MealByCategory[]> {
-	const trimmed = query.trim();
-	if (!trimmed) return [];
+const SEARCH_REVALIDATE_SECONDS = 120;
+
+async function searchMealsByNameUncached(query: string): Promise<MealByCategory[]> {
 	const data = await mealdbGet<MealDBResponse<MealDBMealListItem>>(
-		`/search.php?s=${encodeURIComponent(trimmed)}`,
+		`/search.php?s=${encodeURIComponent(query)}`,
 	);
 	const list = Array.isArray(data?.meals) ? data.meals : [];
 	return list;
+}
+
+export async function searchMealsByName(query: string): Promise<MealByCategory[]> {
+	const trimmed = query.trim();
+	if (!trimmed) return [];
+	return unstable_cache(
+		() => searchMealsByNameUncached(trimmed),
+		['mealdb-search', trimmed],
+		{ revalidate: SEARCH_REVALIDATE_SECONDS, tags: ['mealdb-search'] },
+	)();
 }
 
 export async function getRandomMeal(): Promise<MealDetail | null> {
@@ -84,11 +104,18 @@ export async function getRandomMeal(): Promise<MealDetail | null> {
 
 export type AreaItem = { strArea: string };
 
-export async function getAreas(): Promise<string[]> {
+async function getAreasUncached(): Promise<string[]> {
 	const data = await mealdbGetCached<MealDBAreasResponse>('/list.php?a=list');
 	const list = Array.isArray(data?.meals) ? data.meals : [];
 	const names = list.map((m) => m?.strArea).filter((s): s is string => Boolean(s));
 	return [...new Set(names)].sort((a, b) => a.localeCompare(b, 'en'));
+}
+
+export async function getAreas(): Promise<string[]> {
+	return unstable_cache(getAreasUncached, ['mealdb-areas'], {
+		revalidate: LIST_REVALIDATE_SECONDS,
+		tags: ['mealdb-lists'],
+	})();
 }
 
 export type AreaWithThumb = { strArea: string; strMealThumb: string };

@@ -6,6 +6,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Card } from '@/components/Card';
 import type { MealByCategory } from '@/services/meals';
+import { FAVORITE_MEAL_DETAILS_CACHE_KEY } from '@/constants/storageKeys';
 
 const mealDetailsCache = new Map<string, MealByCategory>();
 
@@ -15,6 +16,36 @@ function parseFavorite(raw: string): MealFavorite | null {
 	if (!raw.startsWith('meal:')) return null;
 	const id = raw.slice(5).trim();
 	return id ? { type: 'meal', id, raw } : null;
+}
+
+function getCachedMealDetailsFromStorage(): Record<string, MealByCategory> {
+	if (typeof window === 'undefined') return {};
+	try {
+		const raw = localStorage.getItem(FAVORITE_MEAL_DETAILS_CACHE_KEY);
+		if (!raw) return {};
+		const parsed = JSON.parse(raw) as unknown;
+		if (typeof parsed !== 'object' || parsed === null) return {};
+		const out: Record<string, MealByCategory> = {};
+		for (const [id, v] of Object.entries(parsed)) {
+			if (typeof v === 'object' && v !== null && 'idMeal' in v && 'strMeal' in v && 'strMealThumb' in v) {
+				out[id] = v as MealByCategory;
+			}
+		}
+		return out;
+	} catch {
+		return {};
+	}
+}
+
+function saveMealDetailToStorage(id: string, data: MealByCategory): void {
+	try {
+		const raw = localStorage.getItem(FAVORITE_MEAL_DETAILS_CACHE_KEY);
+		const current: Record<string, MealByCategory> = raw ? (JSON.parse(raw) as Record<string, MealByCategory>) : {};
+		current[id] = data;
+		localStorage.setItem(FAVORITE_MEAL_DETAILS_CACHE_KEY, JSON.stringify(current));
+	} catch {
+		// ignore
+	}
 }
 
 const glassTitle =
@@ -28,7 +59,9 @@ function CardSkeleton() {
 
 export default function FavoritesPage() {
 	const { favorites } = useFavorites();
-	const [mealDetails, setMealDetails] = useState<Record<string, MealByCategory | null>>({});
+	const [mealDetails, setMealDetails] = useState<Record<string, MealByCategory | null>>(
+		() => getCachedMealDetailsFromStorage(),
+	);
 
 	const parsed = useMemo(
 		() => favorites.map(parseFavorite).filter((x): x is MealFavorite => x !== null),
@@ -40,15 +73,19 @@ export default function FavoritesPage() {
 		[parsed],
 	);
 
+	// Solo pedir al API los favoritos que no tengamos en cache (localStorage o Map en memoria)
 	useEffect(() => {
-		if (mealFavorites.length === 0) {
-			const id = setTimeout(() => setMealDetails({}), 0);
-			return () => clearTimeout(id);
-		}
+		if (mealFavorites.length === 0) return;
+		const cachedFromStorage = getCachedMealDetailsFromStorage();
+		const idsToFetch = mealFavorites.filter(
+			(fav) => !cachedFromStorage[fav.id] && !mealDetailsCache.get(fav.id),
+		);
+		if (idsToFetch.length === 0) return;
+
 		const REQUEST_TIMEOUT_MS = 10_000;
 		let cancelled = false;
-		const details: Record<string, MealByCategory | null> = {};
-		const promises = mealFavorites.map(async (fav) => {
+		const details: Record<string, MealByCategory> = {};
+		const promises = idsToFetch.map(async (fav) => {
 			const controller = new AbortController();
 			const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 			try {
@@ -57,7 +94,7 @@ export default function FavoritesPage() {
 					cache: 'no-store',
 				});
 				clearTimeout(timeoutId);
-				if (cancelled) return;
+				if (cancelled) return { fav, data: null as MealByCategory | null };
 				if (!res.ok) return { fav, data: null as MealByCategory | null };
 				const data = (await res.json()) as { idMeal: string; strMeal: string; strMealThumb: string };
 				return {
@@ -73,8 +110,10 @@ export default function FavoritesPage() {
 			if (cancelled) return;
 			for (const r of results) {
 				if (r.status === 'fulfilled' && r.value?.data) {
-					details[r.value.fav.raw] = r.value.data;
-					mealDetailsCache.set(r.value.fav.id, r.value.data);
+					const { idMeal } = r.value.data;
+					details[idMeal] = r.value.data;
+					mealDetailsCache.set(idMeal, r.value.data);
+					saveMealDetailToStorage(idMeal, r.value.data);
 				}
 			}
 			setMealDetails((prev) => ({ ...prev, ...details }));
@@ -85,7 +124,7 @@ export default function FavoritesPage() {
 	}, [mealFavorites]);
 
 	const mealList = mealFavorites
-		.map((fav) => ({ fav, data: mealDetails[fav.raw] ?? mealDetailsCache.get(fav.id) }))
+		.map((fav) => ({ fav, data: mealDetails[fav.id] ?? mealDetailsCache.get(fav.id) }))
 		.filter(({ data }) => data != null) as {
 		fav: { type: 'meal'; id: string; raw: string };
 		data: MealByCategory;

@@ -107,7 +107,7 @@ export function RecommendationDrawer({ open, onClose, params = null }: Props) {
 		setLoading(true);
 		setError(null);
 		try {
-			const res = await fetch('/api/meals/random');
+			const res = await fetch('/api/meals/random', { cache: 'no-store' });
 			if (!res.ok) throw new Error('Could not fetch recipe');
 			const data = (await res.json()) as MealDetail;
 			setMeal(data);
@@ -125,6 +125,7 @@ export function RecommendationDrawer({ open, onClose, params = null }: Props) {
 		try {
 			const res = await fetch(
 				`/api/meals/recommend?area=${encodeURIComponent(area)}&category=${encodeURIComponent(category)}`,
+				{ cache: 'no-store' },
 			);
 			if (!res.ok) {
 				const err = await res.json().catch(() => ({}));

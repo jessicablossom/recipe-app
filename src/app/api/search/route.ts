@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { mealdbGet, type MealDBMealListItem, type MealDBResponse } from '@/app/api/lib/mealdb';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: Request) {
 	const { searchParams } = new URL(request.url);
 	const q = (searchParams.get('q') ?? '').trim();

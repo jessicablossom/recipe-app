@@ -6,6 +6,8 @@ import {
 	type MealDBResponse,
 } from '@/app/api/lib/mealdb';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
 	const { searchParams } = new URL(request.url);
 	const area = (searchParams.get('area') ?? '').trim();
@@ -41,7 +43,9 @@ export async function GET(request: NextRequest) {
 		if (!meal) {
 			return NextResponse.json({ error: 'Meal details not found' }, { status: 404 });
 		}
-		return NextResponse.json(meal);
+		return NextResponse.json(meal, {
+			headers: { 'Cache-Control': 'no-store, max-age=0' },
+		});
 	} catch (err) {
 		console.error('[api/meals/recommend] error:', err);
 		return NextResponse.json({ error: 'Recommendation unavailable' }, { status: 503 });

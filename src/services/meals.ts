@@ -1,5 +1,6 @@
 import {
 	mealdbGet,
+	mealdbGetCached,
 	type MealDBResponse,
 	type MealDBCategoriesResponse,
 	type MealDBAreasResponse,
@@ -36,7 +37,7 @@ export type MealDetail = {
 };
 
 export async function getCategories(): Promise<Category[]> {
-	const data = await mealdbGet<MealDBCategoriesResponse>('/categories.php');
+	const data = await mealdbGetCached<MealDBCategoriesResponse>('/categories.php');
 	const list = Array.isArray(data?.categories) ? data.categories : [];
 	return list as Category[];
 }
@@ -84,7 +85,7 @@ export async function getRandomMeal(): Promise<MealDetail | null> {
 export type AreaItem = { strArea: string };
 
 export async function getAreas(): Promise<string[]> {
-	const data = await mealdbGet<MealDBAreasResponse>('/list.php?a=list');
+	const data = await mealdbGetCached<MealDBAreasResponse>('/list.php?a=list');
 	const list = Array.isArray(data?.meals) ? data.meals : [];
 	const names = list.map((m) => m?.strArea).filter((s): s is string => Boolean(s));
 	return [...new Set(names)].sort((a, b) => a.localeCompare(b, 'en'));

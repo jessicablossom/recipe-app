@@ -1,5 +1,6 @@
 export {
 	mealdbGet,
+	mealdbGetCached,
 	type MealDBMealListItem,
 	type MealDBMealDetail,
 	type MealDBResponse,

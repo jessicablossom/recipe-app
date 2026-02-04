@@ -1,13 +1,39 @@
 const MEALDB_BASE = 'https://www.themealdb.com/api/json/v1/1';
+const DEFAULT_TIMEOUT_MS = 15_000;
 
-const fetchOptions: RequestInit = {
-	headers: { Accept: 'application/json' },
-	next: { revalidate: 3600 },
-};
+const baseHeaders: HeadersInit = { Accept: 'application/json' };
 
-export async function mealdbGet<T>(path: string): Promise<T | null> {
+export async function mealdbGet<T>(path: string, overrides?: RequestInit): Promise<T | null> {
+	let timeoutId: ReturnType<typeof setTimeout> | undefined;
+	const controller = overrides?.signal ? undefined : new AbortController();
+	if (controller) {
+		timeoutId = setTimeout(() => controller.abort(), DEFAULT_TIMEOUT_MS);
+	}
+	const signal = overrides?.signal ?? controller?.signal;
+
 	try {
-		const res = await fetch(`${MEALDB_BASE}${path}`, fetchOptions);
+		const res = await fetch(`${MEALDB_BASE}${path}`, {
+			...overrides,
+			headers: { ...baseHeaders, ...overrides?.headers },
+			cache: 'no-store',
+			signal,
+		});
+		if (timeoutId) clearTimeout(timeoutId);
+		if (!res.ok) return null;
+		const data = (await res.json()) as T;
+		return data;
+	} catch {
+		if (timeoutId) clearTimeout(timeoutId);
+		return null;
+	}
+}
+
+export async function mealdbGetCached<T>(path: string): Promise<T | null> {
+	try {
+		const res = await fetch(`${MEALDB_BASE}${path}`, {
+			headers: baseHeaders,
+			next: { revalidate: 3600 },
+		});
 		if (!res.ok) return null;
 		const data = (await res.json()) as T;
 		return data;

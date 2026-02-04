@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { mealdbGet, type MealDBMealDetail, type MealDBResponse } from '@/app/api/lib/mealdb';
 
+export const dynamic = 'force-dynamic';
+
 type RouteParams = { params: Promise<{ id: string }> };
 
 export async function GET(_request: Request, { params }: RouteParams) {

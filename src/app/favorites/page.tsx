@@ -20,7 +20,7 @@ const glassTitle =
 
 function CardSkeleton() {
 	return (
-		<div className="aspect-square min-w-[180px] rounded-2xl bg-white/15 backdrop-blur-xl ring-1 ring-white/25 animate-skeleton-pulse" />
+		<div className='aspect-square min-w-[180px] rounded-2xl bg-white/15 backdrop-blur-xl ring-1 ring-white/25 animate-skeleton-pulse' />
 	);
 }
 
@@ -29,10 +29,7 @@ export default function FavoritesPage() {
 	const [mealDetails, setMealDetails] = useState<Record<string, MealByCategory | null>>({});
 
 	const mealFavorites = useMemo(
-		() =>
-			favorites
-				.map(parseFavorite)
-				.filter((x): x is MealFavorite => x !== null),
+		() => favorites.map(parseFavorite).filter((x): x is MealFavorite => x !== null),
 		[favorites],
 	);
 
@@ -64,15 +61,12 @@ export default function FavoritesPage() {
 				}
 			};
 
-			const results = await Promise.allSettled(
-				mealFavorites.map((fav) => fetchOne(fav)),
-			);
+			const results = await Promise.allSettled(mealFavorites.map((fav) => fetchOne(fav)));
 
 			const details: Record<string, MealByCategory | null> = {};
 			mealFavorites.forEach((fav, i) => {
 				const result = results[i];
-				details[fav.raw] =
-					result?.status === 'fulfilled' && result.value != null ? result.value : null;
+				details[fav.raw] = result?.status === 'fulfilled' && result.value != null ? result.value : null;
 			});
 
 			if (!cancelled) {
@@ -95,45 +89,49 @@ export default function FavoritesPage() {
 	const isEmpty = mealFavorites.length === 0;
 
 	return (
-		<div className="relative flex min-h-screen flex-col">
-			<div className="absolute inset-0 overflow-hidden">
+		<div className='relative flex min-h-screen flex-col'>
+			<div className='absolute inset-0 overflow-hidden'>
 				<Image
-					src="/assets/hero-image.jpg"
-					alt=""
+					src='/assets/hero-image.jpg'
+					alt=''
 					fill
-					className="object-cover blur-xl scale-105"
-					sizes="100vw"
+					className='object-cover blur-xl scale-105'
+					sizes='100vw'
 					priority={false}
 				/>
-				<div className="absolute inset-0 bg-grey-light/50" aria-hidden />
-				<div className="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent" aria-hidden />
+				<div className='absolute inset-0 bg-grey-light/50' aria-hidden />
+				<div
+					className='absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent'
+					aria-hidden
+				/>
 			</div>
-			<main className="relative flex flex-1 flex-col gap-6 w-full max-w-5xl mx-auto px-4 py-8 md:px-16">
+			<main className='relative flex flex-1 flex-col gap-6 w-full max-w-5xl mx-auto px-4 py-8 md:px-16'>
 				<h1 className={`text-3xl font-bold ${glassTitle}`}>Favorites</h1>
 
 				{isEmpty && (
-					<p className="text-grey-dark text-lg">
+					<p className='text-grey-dark text-lg'>
 						You have no favorites. Add recipes from the app to see them here.
 					</p>
 				)}
 
 				{!isEmpty && (
 					<section>
-						<div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 grid-scroll-3-rows">
+						<div className='w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 grid-scroll-3-rows'>
 							{mealList.map(({ fav, data }) => (
-								<div key={fav.raw} className="animate-card-in">
+								<div key={fav.raw} className='animate-card-in'>
 									<Link href={`/meal/${data.idMeal}`}>
 										<Card
 											title={data.strMeal}
 											image={data.strMealThumb}
-											fit="cover"
+											fit='cover'
 											favoriteId={fav.raw}
 											imageGradient
 										/>
 									</Link>
 								</div>
 							))}
-							{loadingMeals && Array.from({ length: 4 }, (_, i) => <CardSkeleton key={`skeleton-${i}`} />)}
+							{loadingMeals &&
+								Array.from({ length: 3 }, (_, i) => <CardSkeleton key={`skeleton-${i}`} />)}
 						</div>
 					</section>
 				)}

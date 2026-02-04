@@ -115,7 +115,7 @@ export default async function MealPage({ params }: Props) {
 
 				<section className={`${glassPanel} p-5 md:p-6`}>
 					<h2 className='text-lg font-semibold text-grey-dark md:text-xl'>Instructions</h2>
-					<div className='mt-4 whitespace-pre-wrap capitalize rounded-xl bg-white/20 p-4 text-grey-dark leading-relaxed ring-1 ring-white/25 md:p-5'>
+					<div className='mt-4 whitespace-pre-wrap rounded-xl bg-white/20 p-4 text-grey-dark leading-relaxed ring-1 ring-white/25 md:p-5'>
 						{meal.strInstructions}
 					</div>
 				</section>

@@ -131,14 +131,14 @@ export function Hero() {
 									</div>
 
 									<div
-										className='w-full min-w-0 overflow-x-auto overflow-y-hidden scroll-smooth py-1 -mx-1 px-1 overscroll-x-contain touch-pan-x'
+										className='w-full min-w-0 overflow-x-auto overflow-y-hidden scroll-smooth py-1 -mx-1 px-1 overscroll-x-contain touch-pan-x min-h-10'
 										style={{
 											maxWidth: CAROUSEL_MAX_WIDTH,
 											WebkitOverflowScrolling: 'touch',
 											scrollbarWidth: 'thin',
 										}}
 									>
-										<div className='flex gap-2 flex-nowrap w-max'>
+										<div className='flex gap-2 flex-nowrap w-max min-h-9 items-center'>
 											{areasLoading ? (
 												<span className='text-sm text-white/70'>Loading areas…</span>
 											) : (
@@ -193,14 +193,14 @@ export function Hero() {
 											</label>
 										</div>
 										<div
-											className='w-full min-w-0 overflow-x-auto overflow-y-hidden scroll-smooth py-1 -mx-1 px-1 overscroll-x-contain touch-pan-x'
+											className='w-full min-w-0 overflow-x-auto overflow-y-hidden scroll-smooth py-1 -mx-1 px-1 overscroll-x-contain touch-pan-x min-h-10'
 											style={{
 												maxWidth: CAROUSEL_MAX_WIDTH,
 												WebkitOverflowScrolling: 'touch',
 												scrollbarWidth: 'thin',
 											}}
 										>
-											<div className='flex gap-2 flex-nowrap w-max'>
+											<div className='flex gap-2 flex-nowrap w-max min-h-9 items-center'>
 												{categoriesLoading ? (
 													<span className='text-sm text-white/70'>Loading categories…</span>
 												) : (

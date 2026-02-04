@@ -1,4 +1,11 @@
-import { mealdbClient } from './mealDbClient';
+import {
+	mealdbGet,
+	type MealDBResponse,
+	type MealDBCategoriesResponse,
+	type MealDBAreasResponse,
+	type MealDBMealListItem,
+	type MealDBMealDetail,
+} from '@/lib/mealdb';
 
 export type Category = {
 	idCategory: string;
@@ -29,54 +36,58 @@ export type MealDetail = {
 };
 
 export async function getCategories(): Promise<Category[]> {
-	const response = await mealdbClient.get<{ categories: Category[] | null }>('/categories.php');
-	const categories = response.data?.categories ?? [];
-	return categories;
+	const data = await mealdbGet<MealDBCategoriesResponse>('/categories.php');
+	const list = Array.isArray(data?.categories) ? data.categories : [];
+	return list as Category[];
 }
 
-export async function getMealsByCategory(category: string) {
-	const { data } = await mealdbClient.get<{ meals: MealByCategory[] | null }>(
+export async function getMealsByCategory(category: string): Promise<MealByCategory[]> {
+	const data = await mealdbGet<MealDBResponse<MealDBMealListItem>>(
 		`/filter.php?c=${encodeURIComponent(category)}`,
 	);
-
-	return data.meals ?? [];
+	const list = Array.isArray(data?.meals) ? data.meals : [];
+	return list;
 }
 
 export async function getMealsByArea(area: string): Promise<MealByCategory[]> {
 	const trimmed = area.trim();
 	if (!trimmed) return [];
-	const { data } = await mealdbClient.get<{ meals: MealByCategory[] | null }>(
+	const data = await mealdbGet<MealDBResponse<MealDBMealListItem>>(
 		`/filter.php?a=${encodeURIComponent(trimmed)}`,
 	);
-	return data.meals ?? [];
+	const list = Array.isArray(data?.meals) ? data.meals : [];
+	return list;
 }
 
 export async function getMealById(id: string): Promise<MealDetail | null> {
-	const { data } = await mealdbClient.get<{ meals: MealDetail[] | null }>(`/lookup.php?i=${id}`);
-	return data.meals?.[0] ?? null;
+	const data = await mealdbGet<MealDBResponse<MealDBMealDetail>>(`/lookup.php?i=${encodeURIComponent(id)}`);
+	const meal = Array.isArray(data?.meals) && data.meals.length > 0 ? data.meals[0] : null;
+	return meal as MealDetail | null;
 }
 
 export async function searchMealsByName(query: string): Promise<MealByCategory[]> {
 	const trimmed = query.trim();
 	if (!trimmed) return [];
-	const { data } = await mealdbClient.get<{ meals: MealByCategory[] | null }>(
+	const data = await mealdbGet<MealDBResponse<MealDBMealListItem>>(
 		`/search.php?s=${encodeURIComponent(trimmed)}`,
 	);
-	return data.meals ?? [];
+	const list = Array.isArray(data?.meals) ? data.meals : [];
+	return list;
 }
 
 export async function getRandomMeal(): Promise<MealDetail | null> {
-	const { data } = await mealdbClient.get<{ meals: MealDetail[] | null }>('/random.php');
-	return data.meals?.[0] ?? null;
+	const data = await mealdbGet<MealDBResponse<MealDBMealDetail>>('/random.php');
+	const meal = Array.isArray(data?.meals) && data.meals.length > 0 ? data.meals[0] : null;
+	return meal as MealDetail | null;
 }
 
 export type AreaItem = { strArea: string };
 
 export async function getAreas(): Promise<string[]> {
-	const { data } = await mealdbClient.get<{ meals: AreaItem[] | null }>('/list.php?a=list');
-	const list = data.meals ?? [];
-	const names = list.map((m) => m.strArea).filter(Boolean);
-	return [...names].sort((a, b) => a.localeCompare(b, 'en'));
+	const data = await mealdbGet<MealDBAreasResponse>('/list.php?a=list');
+	const list = Array.isArray(data?.meals) ? data.meals : [];
+	const names = list.map((m) => m?.strArea).filter((s): s is string => Boolean(s));
+	return [...new Set(names)].sort((a, b) => a.localeCompare(b, 'en'));
 }
 
 export type AreaWithThumb = { strArea: string; strMealThumb: string };
@@ -93,7 +104,10 @@ export async function getAreasWithThumb(): Promise<AreaWithThumb[]> {
 	return results;
 }
 
-export async function getRecommendationByAreaAndCategory(area: string, category: string): Promise<MealDetail | null> {
+export async function getRecommendationByAreaAndCategory(
+	area: string,
+	category: string,
+): Promise<MealDetail | null> {
 	const [mealsByArea, mealsByCategory] = await Promise.all([getMealsByArea(area), getMealsByCategory(category)]);
 
 	const idsByArea = new Set(mealsByArea.map((m) => m.idMeal));

@@ -1,10 +1,16 @@
-import { getRandomMeal } from '@/services/meals';
 import { NextResponse } from 'next/server';
+import { mealdbGet, type MealDBMealDetail, type MealDBResponse } from '@/app/api/lib/mealdb';
 
 export async function GET() {
-	const meal = await getRandomMeal();
-	if (!meal) {
-		return NextResponse.json({ error: 'No meal found' }, { status: 404 });
+	try {
+		const res = await mealdbGet<MealDBResponse<MealDBMealDetail>>('/random.php');
+		const meal = Array.isArray(res?.meals) && res.meals.length > 0 ? res.meals[0] : null;
+		if (!meal) {
+			return NextResponse.json({ error: 'No meal found' }, { status: 404 });
+		}
+		return NextResponse.json(meal);
+	} catch (err) {
+		console.error('[api/meals/random] error:', err);
+		return NextResponse.json({ error: 'Random meal unavailable' }, { status: 503 });
 	}
-	return NextResponse.json(meal);
 }

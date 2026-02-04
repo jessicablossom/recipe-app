@@ -36,6 +36,8 @@ export default function FavoritesPage() {
 		[favorites],
 	);
 
+	const FETCH_TIMEOUT_MS = 10_000;
+
 	useEffect(() => {
 		let cancelled = false;
 
@@ -45,18 +47,33 @@ export default function FavoritesPage() {
 				return;
 			}
 
-			const details: Record<string, MealByCategory | null> = {};
-			await Promise.all(
-				mealFavorites.map(async (fav) => {
-					const res = await fetch(`/api/meals/${encodeURIComponent(fav.id)}`);
-					if (!res.ok) {
-						details[fav.raw] = null;
-						return;
-					}
+			const fetchOne = async (fav: MealFavorite): Promise<MealByCategory | null> => {
+				const controller = new AbortController();
+				const timeoutId = window.setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+				try {
+					const res = await fetch(`/api/meals/${encodeURIComponent(fav.id)}`, {
+						signal: controller.signal,
+					});
+					window.clearTimeout(timeoutId);
+					if (!res.ok) return null;
 					const data = (await res.json()) as { idMeal: string; strMeal: string; strMealThumb: string };
-					details[fav.raw] = { idMeal: data.idMeal, strMeal: data.strMeal, strMealThumb: data.strMealThumb };
-				}),
+					return { idMeal: data.idMeal, strMeal: data.strMeal, strMealThumb: data.strMealThumb };
+				} catch {
+					window.clearTimeout(timeoutId);
+					return null;
+				}
+			};
+
+			const results = await Promise.allSettled(
+				mealFavorites.map((fav) => fetchOne(fav)),
 			);
+
+			const details: Record<string, MealByCategory | null> = {};
+			mealFavorites.forEach((fav, i) => {
+				const result = results[i];
+				details[fav.raw] =
+					result?.status === 'fulfilled' && result.value != null ? result.value : null;
+			});
 
 			if (!cancelled) {
 				setMealDetails(details);

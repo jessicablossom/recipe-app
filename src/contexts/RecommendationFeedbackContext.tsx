@@ -1,15 +1,17 @@
 'use client';
 
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
-
-const FEEDBACK_KEY = 'recipe-app:recommendation-feedback';
-const SAVE_FEEDBACK_KEY = 'recipe-app:save-feedback';
-const MAX_ENTRIES = 50;
+import type { RecommendationFeedbackEntry } from '@/types/recommendation';
+import {
+	FEEDBACK_LOCAL_STORAGE_KEY,
+	SAVE_FEEDBACK_LOCAL_STORAGE_KEY,
+	MAX_RECOMMENDATION_FEEDBACK_ENTRIES,
+} from '@/constants/storageKeys';
 
 function getFeedbackEnabled(): boolean {
 	if (typeof window === 'undefined') return true;
 	try {
-		const raw = localStorage.getItem(SAVE_FEEDBACK_KEY);
+		const raw = localStorage.getItem(SAVE_FEEDBACK_LOCAL_STORAGE_KEY);
 		if (raw === null) return true;
 		return raw === 'true';
 	} catch {
@@ -19,26 +21,16 @@ function getFeedbackEnabled(): boolean {
 
 function persistFeedbackEnabled(value: boolean): void {
 	try {
-		localStorage.setItem(SAVE_FEEDBACK_KEY, value ? 'true' : 'false');
+		localStorage.setItem(SAVE_FEEDBACK_LOCAL_STORAGE_KEY, value ? 'true' : 'false');
 	} catch {
 		console.log('log error');
 	}
 }
 
-export type RecommendationFeedbackEntry = {
-	idMeal: string;
-	strMeal: string;
-	strMealThumb: string;
-	timestamp: number;
-	area?: string;
-	category?: string;
-	matched: boolean;
-};
-
 function getStoredFeedback(): RecommendationFeedbackEntry[] {
 	if (typeof window === 'undefined') return [];
 	try {
-		const raw = localStorage.getItem(FEEDBACK_KEY);
+		const raw = localStorage.getItem(FEEDBACK_LOCAL_STORAGE_KEY);
 		if (raw === null) return [];
 		const parsed = JSON.parse(raw) as unknown;
 		if (!Array.isArray(parsed)) return [];
@@ -53,7 +45,7 @@ function getStoredFeedback(): RecommendationFeedbackEntry[] {
 					'timestamp' in x &&
 					'matched' in x,
 			)
-			.slice(0, MAX_ENTRIES);
+			.slice(0, MAX_RECOMMENDATION_FEEDBACK_ENTRIES);
 	} catch {
 		return [];
 	}
@@ -61,7 +53,10 @@ function getStoredFeedback(): RecommendationFeedbackEntry[] {
 
 function setStoredFeedback(entries: RecommendationFeedbackEntry[]): void {
 	try {
-		localStorage.setItem(FEEDBACK_KEY, JSON.stringify(entries.slice(0, MAX_ENTRIES)));
+		localStorage.setItem(
+			FEEDBACK_LOCAL_STORAGE_KEY,
+			JSON.stringify(entries.slice(0, MAX_RECOMMENDATION_FEEDBACK_ENTRIES)),
+		);
 	} catch {
 		console.log('log error');
 	}
@@ -81,8 +76,22 @@ export function RecommendationFeedbackProvider({ children }: { children: ReactNo
 	const [feedbackEnabled, setFeedbackEnabledState] = useState(true);
 
 	useEffect(() => {
-		setFeedbackList(getStoredFeedback());
-		setFeedbackEnabledState(getFeedbackEnabled());
+		let cancelled = false;
+
+		const init = async () => {
+			if (cancelled) return;
+			const storedFeedback = getStoredFeedback();
+			const enabled = getFeedbackEnabled();
+			if (cancelled) return;
+			setFeedbackList(storedFeedback);
+			setFeedbackEnabledState(enabled);
+		};
+
+		void init();
+
+		return () => {
+			cancelled = true;
+		};
 	}, []);
 
 	const setFeedbackEnabled = useCallback((value: boolean) => {
@@ -92,7 +101,7 @@ export function RecommendationFeedbackProvider({ children }: { children: ReactNo
 
 	const addFeedback = useCallback((entry: RecommendationFeedbackEntry) => {
 		setFeedbackList((prev) => {
-			const next = [entry, ...prev].slice(0, MAX_ENTRIES);
+			const next = [entry, ...prev].slice(0, MAX_RECOMMENDATION_FEEDBACK_ENTRIES);
 			setStoredFeedback(next);
 			return next;
 		});

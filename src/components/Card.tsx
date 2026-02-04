@@ -19,7 +19,7 @@ const fitClasses: Record<ImageFit, string> = {
 };
 
 const glassCard =
-	'rounded-2xl bg-white/20 ring-1 ring-white/30 shadow-[0_8px_32px_-12px_rgba(0,0,0,0.12)] aspect-square min-w-[200px] flex flex-col overflow-hidden transition hover:bg-white/25 hover:ring-white/40 hover:shadow-[0_12px_40px_-12px_rgba(0,0,0,0.18)] hover:-translate-y-0.5';
+	'rounded-2xl bg-white/20 ring-1 ring-white/30 shadow-[0_8px_32px_-12px_rgba(0,0,0,0.12)] aspect-square min-w-[180px] flex flex-col overflow-hidden transition hover:bg-white/25 hover:ring-white/40 hover:shadow-[0_12px_40px_-12px_rgba(0,0,0,0.18)] hover:-translate-y-0.5';
 
 const HeartIcon = ({ filled }: { filled: boolean }) => {
 	return (

@@ -51,7 +51,6 @@ export function Hero() {
 	const buttonBase =
 		'inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-accent disabled:opacity-40 disabled:cursor-not-allowed';
 	const buttonPrimary = `${buttonBase} bg-white text-grey-dark shadow-[0_14px_40px_-28px_rgba(0,0,0,0.9)] hover:opacity-95`;
-	const buttonGlass = `${buttonBase} bg-white/10 text-white ring-1 ring-white/20 hover:bg-white/15`;
 
 	return (
 		<section className='relative w-full min-h-[100dvh] md:min-h-[90vh] flex flex-col -mt-16 pt-16'>

@@ -1,13 +1,12 @@
 'use client';
 
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
-
-const FAVORITES_KEY = 'recipe-app:favorites';
+import { FAVORITES_LOCAL_STORAGE_KEY } from '@/constants/storageKeys';
 
 function getStoredFavorites(): string[] {
 	if (typeof window === 'undefined') return [];
 	try {
-		const raw = localStorage.getItem(FAVORITES_KEY);
+		const raw = localStorage.getItem(FAVORITES_LOCAL_STORAGE_KEY);
 		if (raw === null) return [];
 		const parsed = JSON.parse(raw) as unknown;
 		return Array.isArray(parsed) ? parsed.filter((x): x is string => typeof x === 'string') : [];
@@ -18,7 +17,7 @@ function getStoredFavorites(): string[] {
 
 function setStoredFavorites(ids: string[]): void {
 	try {
-		localStorage.setItem(FAVORITES_KEY, JSON.stringify(ids));
+		localStorage.setItem(FAVORITES_LOCAL_STORAGE_KEY, JSON.stringify(ids));
 	} catch {
 		console.log('log error');
 	}
@@ -37,8 +36,21 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
 	const [mounted, setMounted] = useState(false);
 
 	useEffect(() => {
-		setFavorites(getStoredFavorites());
-		setMounted(true);
+		let cancelled = false;
+
+		const init = async () => {
+			if (cancelled) return;
+			const stored = getStoredFavorites();
+			if (cancelled) return;
+			setFavorites(stored);
+			setMounted(true);
+		};
+
+		void init();
+
+		return () => {
+			cancelled = true;
+		};
 	}, []);
 
 	const isFavorite = useCallback((id: string) => favorites.includes(id), [favorites]);

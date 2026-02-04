@@ -2,8 +2,7 @@
 
 import { createContext, useCallback, useContext, useState, type ReactNode } from 'react';
 import { RecommendationDrawer } from '@/components/recommendation/RecommendationDrawer';
-
-export type RecommendationParams = { area: string; category: string };
+import type { RecommendationParams } from '@/types/recommendation';
 
 type RecommendationContextValue = {
 	openRecommendation: (params?: RecommendationParams) => void;

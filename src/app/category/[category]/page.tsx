@@ -13,10 +13,13 @@ export default async function CategoryPage({ params }: Props) {
 	const { category } = await params;
 	const decodedCategory = decodeURIComponent(category);
 
-	const [categories, meals] = await Promise.all([
-		getCategories(),
-		getMealsByCategory(decodedCategory),
-	]);
+	let categories;
+	let meals;
+	try {
+		[categories, meals] = await Promise.all([getCategories(), getMealsByCategory(decodedCategory)]);
+	} catch {
+		notFound();
+	}
 
 	const categoryExists = categories.some(
 		(c) => c.strCategory.toLowerCase() === decodedCategory.toLowerCase(),

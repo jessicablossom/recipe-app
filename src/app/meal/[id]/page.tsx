@@ -21,7 +21,12 @@ const glassBadge =
 
 export default async function MealPage({ params }: Props) {
 	const { id } = await params;
-	const meal = await getMealById(id);
+	let meal = null;
+	try {
+		meal = await getMealById(id);
+	} catch {
+		notFound();
+	}
 
 	if (!meal) notFound();
 

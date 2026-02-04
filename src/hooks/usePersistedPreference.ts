@@ -1,13 +1,12 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-
-const STORAGE_PREFIX = 'recipe-app';
+import { PREFERENCE_STORAGE_PREFIX } from '@/constants/storageKeys';
 
 function getStoredBoolean(key: string, defaultValue: boolean): boolean {
 	if (typeof window === 'undefined') return defaultValue;
 	try {
-		const raw = localStorage.getItem(`${STORAGE_PREFIX}:${key}`);
+		const raw = localStorage.getItem(`${PREFERENCE_STORAGE_PREFIX}:${key}`);
 		if (raw === null) return defaultValue;
 		return raw === 'true';
 	} catch {
@@ -17,7 +16,7 @@ function getStoredBoolean(key: string, defaultValue: boolean): boolean {
 
 function setStoredBoolean(key: string, value: boolean): void {
 	try {
-		localStorage.setItem(`${STORAGE_PREFIX}:${key}`, value ? 'true' : 'false');
+		localStorage.setItem(`${PREFERENCE_STORAGE_PREFIX}:${key}`, value ? 'true' : 'false');
 	} catch {
 		console.log('log error');
 	}

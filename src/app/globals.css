@@ -82,3 +82,14 @@ body {
 	outline: 2px solid rgb(var(--color-error) / 0.5);
 	outline-offset: 2px;
 }
+
+.grid-scroll-3-rows {
+	max-height: 72vh;
+	overflow-y: auto;
+	scrollbar-width: none;
+}
+
+.grid-scroll-3-rows::-webkit-scrollbar {
+	display: none;
+}
+

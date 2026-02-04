@@ -159,7 +159,6 @@ export function SearchBox({ open, onClose, isHome = false }: Props) {
 								autoComplete='off'
 								className={inputClass}
 								aria-label='Search recipes'
-								aria-expanded={showPanel}
 								aria-controls='search-results'
 								aria-autocomplete='list'
 							/>
@@ -192,7 +191,7 @@ export function SearchBox({ open, onClose, isHome = false }: Props) {
 								{panelContent === 'results' && (
 									<ul className='py-2'>
 										{results.map((meal) => (
-											<li key={meal.idMeal} role='option'>
+											<li key={meal.idMeal}>
 												<Link
 													href={`/meal/${meal.idMeal}`}
 													onClick={onClose}

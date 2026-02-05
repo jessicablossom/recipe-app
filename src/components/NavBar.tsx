@@ -40,7 +40,7 @@ export function NavBar() {
 
 	return (
 		<nav
-			className={`fixed top-0 left-0 right-0 z-50 w-full border-b backdrop-blur-md transition-colors ${
+			className={`nav-with-safe-area fixed top-0 left-0 right-0 z-50 w-full border-b backdrop-blur-md transition-colors ${
 				isHome ? 'bg-black/75 border-white/10' : 'bg-primary/85 border-primary/70'
 			}`}
 		>

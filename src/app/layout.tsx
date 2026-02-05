@@ -1,9 +1,14 @@
 import './globals.css';
+import type { Viewport } from 'next';
 import { Providers } from './providers';
 import { NavBar } from '@/components/NavBar';
 import { Footer } from '@/components/Footer';
 import { FloatingRecommendationButton } from '@/components/FloatingRecommendationButton';
 import { MainWithRouteBackground } from '@/components/MainWithRouteBackground';
+
+export const viewport: Viewport = {
+	viewportFit: 'cover',
+};
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
 	return (

@@ -28,6 +28,18 @@ body {
 	font-family: Arial, Helvetica, sans-serif;
 }
 
+.nav-with-safe-area {
+	padding-top: 0;
+	padding-top: env(safe-area-inset-top);
+	-webkit-backdrop-filter: blur(12px);
+	backdrop-filter: blur(12px);
+}
+
+.main-with-safe-area {
+	padding-top: 4rem;
+	padding-top: calc(4rem + env(safe-area-inset-top));
+}
+
 @keyframes skeleton-pulse {
 	0%,
 	100% {

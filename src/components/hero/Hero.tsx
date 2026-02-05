@@ -88,7 +88,7 @@ export function Hero() {
 				<div className='absolute inset-0 bg-gradient-to-b from-black/5 via-black/20 to-black/70' />
 			</div>
 
-			<div className='relative flex flex-1 flex-col justify-center px-4 pt-16 pb-8 md:pt-20 md:pb-10 overflow-hidden'>
+			<div className='relative flex flex-1 flex-col justify-start px-4 pt-6 pb-28 md:justify-center md:pt-20 md:pb-10 overflow-hidden'>
 				<div className='mx-auto w-full max-w-5xl min-w-0'>
 					<div className='grid gap-4 md:gap-6 lg:grid-cols-[1fr_1.15fr] items-center min-w-0'>
 						<div className='space-y-4 min-w-0'>

@@ -38,13 +38,16 @@ export function NavBar() {
 		setSearchOpen(false);
 	}, [pathname, setSearchOpen]);
 
+	const safeAreaBg = isHome ? 'rgba(0, 0, 0, 0.75)' : 'rgba(52, 148, 115, 0.85)';
+
 	return (
 		<nav
 			className={`nav-with-safe-area fixed top-0 left-0 right-0 z-50 w-full border-b backdrop-blur-md transition-colors ${
 				isHome ? 'bg-black/75 border-white/10' : 'bg-primary/85 border-primary/70'
 			}`}
+			style={{ ['--nav-safe-area-bg' as string]: safeAreaBg }}
 		>
-			<div className='mx-auto flex h-16 max-w-5xl items-center justify-between px-4 md:px-16'>
+			<div className='relative z-10 mx-auto flex h-16 max-w-5xl items-center justify-between px-4 md:px-16'>
 				<div className='flex items-center gap-6'>
 					<Link href='/' className='flex items-end gap-2'>
 						<Image src='/assets/icon-filled.png' alt='Recipe App icon' width={35} height={35} />

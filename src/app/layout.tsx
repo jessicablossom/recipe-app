@@ -8,6 +8,7 @@ import { MainWithRouteBackground } from '@/components/MainWithRouteBackground';
 
 export const viewport: Viewport = {
 	viewportFit: 'cover',
+	themeColor: '#1a1a1a', 
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

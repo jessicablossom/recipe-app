@@ -72,6 +72,7 @@ export function Footer() {
 			<div className='mx-auto max-w-5xl px-4 py-8 md:px-16 md:py-10'>
 				<div className='flex gap-4 flex-col'>
 					<button
+						id='footer-instant-recommendation'
 						type='button'
 						onClick={() => openRecommendation()}
 						className={recommendationButton}

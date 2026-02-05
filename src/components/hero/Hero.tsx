@@ -8,8 +8,6 @@ import type { RootState, AppDispatch } from '@/store';
 import { clearHeroPreference, setHeroArea, setHeroCategory } from '@/store/slices/appSlice';
 import { HERO_PREFERENCE_AREA_KEY, HERO_PREFERENCE_CATEGORY_KEY } from '@/constants/storageKeys';
 
-const CAROUSEL_MAX_WIDTH = '32rem';
-
 export function Hero() {
 	const dispatch = useDispatch<AppDispatch>();
 	const area = useSelector((state: RootState) => state.app.heroPreference.area);
@@ -75,7 +73,6 @@ export function Hero() {
 	};
 	const step = area ? 2 : 1;
 
-
 	return (
 		<section className='relative w-full min-h-[100dvh] md:min-h-[90vh] flex flex-col -mt-16 pt-16'>
 			<div className='absolute inset-0 overflow-hidden'>
@@ -133,7 +130,6 @@ export function Hero() {
 									<div
 										className='w-full min-w-0 overflow-x-auto overflow-y-hidden scroll-smooth py-1 -mx-1 px-1 overscroll-x-contain touch-pan-x min-h-10'
 										style={{
-											maxWidth: CAROUSEL_MAX_WIDTH,
 											WebkitOverflowScrolling: 'touch',
 											scrollbarWidth: 'thin',
 										}}
@@ -195,7 +191,6 @@ export function Hero() {
 										<div
 											className='w-full min-w-0 overflow-x-auto overflow-y-hidden scroll-smooth py-1 -mx-1 px-1 overscroll-x-contain touch-pan-x min-h-10'
 											style={{
-												maxWidth: CAROUSEL_MAX_WIDTH,
 												WebkitOverflowScrolling: 'touch',
 												scrollbarWidth: 'thin',
 											}}

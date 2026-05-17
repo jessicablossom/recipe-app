@@ -15,8 +15,6 @@ const chipBase =
 
 const chipActive = 'bg-white/25 ring-white/40 text-grey-dark';
 
-const AREA_PLACEHOLDER_IMAGE = '/assets/hero-image.jpg';
-
 type Props = {
 	categories: Category[];
 	areasWithThumb: AreaWithThumb[];
@@ -61,7 +59,7 @@ export function CategoriesWithFilter({ categories, areasWithThumb }: Props) {
 				key: `area-${a.strArea}`,
 				title: a.strArea,
 				href: `/area/${encodeURIComponent(a.strArea)}`,
-				image: a.strMealThumb || AREA_PLACEHOLDER_IMAGE,
+				image: a.strMealThumb,
 				type: 'area' as const,
 			})),
 		];
@@ -172,7 +170,7 @@ export function CategoriesWithFilter({ categories, areasWithThumb }: Props) {
 						<Link key={area.strArea} href={`/area/${encodeURIComponent(area.strArea)}`}>
 							<Card
 								title={area.strArea}
-								image={area.strMealThumb || AREA_PLACEHOLDER_IMAGE}
+								image={area.strMealThumb}
 								fit='cover'
 								imageGradient
 							/>

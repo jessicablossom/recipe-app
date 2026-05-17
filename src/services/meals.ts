@@ -8,8 +8,16 @@ import {
 	type MealDBMealListItem,
 	type MealDBMealDetail,
 } from '@/lib/mealdb';
+import { MEALDB_FILTER_CONCURRENCY } from '@/constants/mealdb';
+import { filterWithConcurrency } from '@/utils/filterWithConcurrency';
+import { hasValidRecipeImage } from '@/utils/mealImage';
 
 const LIST_REVALIDATE_SECONDS = 3600;
+
+async function categoryHasMeals(category: string): Promise<boolean> {
+	const meals = await getMealsByCategory(category);
+	return meals.length > 0;
+}
 
 export type Category = {
 	idCategory: string;
@@ -41,12 +49,12 @@ export type MealDetail = {
 
 async function getCategoriesUncached(): Promise<Category[]> {
 	const data = await mealdbGetCached<MealDBCategoriesResponse>('/categories.php');
-	const list = Array.isArray(data?.categories) ? data.categories : [];
-	return list as Category[];
+	const list = Array.isArray(data?.categories) ? (data.categories as Category[]) : [];
+	return filterWithConcurrency(list, (cat) => categoryHasMeals(cat.strCategory));
 }
 
 export async function getCategories(): Promise<Category[]> {
-	return unstable_cache(getCategoriesUncached, ['mealdb-categories'], {
+	return unstable_cache(getCategoriesUncached, ['mealdb-categories-with-meals'], {
 		revalidate: LIST_REVALIDATE_SECONDS,
 		tags: ['mealdb-lists'],
 	})();
@@ -104,32 +112,43 @@ export async function getRandomMeal(): Promise<MealDetail | null> {
 
 export type AreaItem = { strArea: string };
 
-async function getAreasUncached(): Promise<string[]> {
+export type AreaWithThumb = { strArea: string; strMealThumb: string };
+
+async function resolveAreaWithThumb(area: string): Promise<AreaWithThumb | null> {
+	const meals = await getMealsByArea(area);
+	if (meals.length === 0) return null;
+	const thumb = meals[0]?.strMealThumb?.trim() ?? '';
+	if (!hasValidRecipeImage(thumb)) return null;
+	return { strArea: area, strMealThumb: thumb };
+}
+
+async function getAreasWithThumbUncached(): Promise<AreaWithThumb[]> {
 	const data = await mealdbGetCached<MealDBAreasResponse>('/list.php?a=list');
 	const list = Array.isArray(data?.meals) ? data.meals : [];
 	const names = list.map((m) => m?.strArea).filter((s): s is string => Boolean(s));
-	return [...new Set(names)].sort((a, b) => a.localeCompare(b, 'en'));
+	const unique = [...new Set(names)].sort((a, b) => a.localeCompare(b, 'en'));
+
+	const withThumb: AreaWithThumb[] = [];
+	for (let i = 0; i < unique.length; i += MEALDB_FILTER_CONCURRENCY) {
+		const chunk = unique.slice(i, i + MEALDB_FILTER_CONCURRENCY);
+		const batch = await Promise.all(chunk.map((area) => resolveAreaWithThumb(area)));
+		for (const item of batch) {
+			if (item) withThumb.push(item);
+		}
+	}
+	return withThumb;
 }
 
-export async function getAreas(): Promise<string[]> {
-	return unstable_cache(getAreasUncached, ['mealdb-areas'], {
+export async function getAreasWithThumb(): Promise<AreaWithThumb[]> {
+	return unstable_cache(getAreasWithThumbUncached, ['mealdb-areas-with-thumb'], {
 		revalidate: LIST_REVALIDATE_SECONDS,
 		tags: ['mealdb-lists'],
 	})();
 }
 
-export type AreaWithThumb = { strArea: string; strMealThumb: string };
-
-export async function getAreasWithThumb(): Promise<AreaWithThumb[]> {
-	const areas = await getAreas();
-	const results = await Promise.all(
-		areas.map(async (area) => {
-			const meals = await getMealsByArea(area);
-			const thumb = meals[0]?.strMealThumb ?? '';
-			return { strArea: area, strMealThumb: thumb };
-		}),
-	);
-	return results;
+export async function getAreas(): Promise<string[]> {
+	const withThumb = await getAreasWithThumb();
+	return withThumb.map((a) => a.strArea);
 }
 
 export async function getRecommendationByAreaAndCategory(
